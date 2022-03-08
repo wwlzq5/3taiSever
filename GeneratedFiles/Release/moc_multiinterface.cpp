@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'multiinterface.h'
 **
-** Created: Mon Feb 28 09:32:27 2022
+** Created: Tue Mar 8 15:12:40 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -42,15 +42,15 @@ static const uint qt_meta_data_MultiInterface[] = {
      204,   15,   15,   15, 0x0a,
      226,   15,   15,   15, 0x0a,
      246,   15,   15,   15, 0x0a,
-     267,   15,   15,   15, 0x0a,
-     282,   16,   15,   15, 0x0a,
-     313,   15,   15,   15, 0x0a,
-     337,   15,   15,   15, 0x0a,
-     362,   15,   15,   15, 0x0a,
-     386,   15,   15,   15, 0x0a,
-     409,   15,   15,   15, 0x0a,
-     430,   15,   15,   15, 0x0a,
-     478,   15,   15,   15, 0x0a,
+     267,   16,   15,   15, 0x0a,
+     298,   15,   15,   15, 0x0a,
+     322,   15,   15,   15, 0x0a,
+     347,   15,   15,   15, 0x0a,
+     371,   15,   15,   15, 0x0a,
+     394,   15,   15,   15, 0x0a,
+     415,   15,   15,   15, 0x0a,
+     463,   15,   15,   15, 0x0a,
+     485,   15,   15,   15, 0x0a,
 
        0        // eod
 };
@@ -63,13 +63,13 @@ static const char qt_meta_stringdata_MultiInterface[] = {
     "slots_ModeState(StateEnum,QString)\0"
     "slots_clickAccont(int)\0ServerNewConnection()\0"
     "onServerDataReady()\0slots_ConnectState()\0"
-    "onDisconnect()\0slots_OnUpdateIOCard(int*,int)\0"
+    "slots_OnUpdateIOCard(int*,int)\0"
     "slots_SaveCountBytime()\0"
     "slots_SaveCountByShift()\0"
     "slots_UpdateRecordSet()\0slots_UpdateShiftSet()\0"
     "slots_CloseConnect()\0"
     "slot_StateChanged(QAbstractSocket::SocketState)\0"
-    "slots_loginState(int)\0"
+    "slots_loginState(int)\0slots_SaveRecord()\0"
 };
 
 void MultiInterface::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -87,15 +87,15 @@ void MultiInterface::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 6: _t->ServerNewConnection(); break;
         case 7: _t->onServerDataReady(); break;
         case 8: _t->slots_ConnectState(); break;
-        case 9: _t->onDisconnect(); break;
-        case 10: _t->slots_OnUpdateIOCard((*reinterpret_cast< int*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 11: _t->slots_SaveCountBytime(); break;
-        case 12: _t->slots_SaveCountByShift(); break;
-        case 13: _t->slots_UpdateRecordSet(); break;
-        case 14: _t->slots_UpdateShiftSet(); break;
-        case 15: _t->slots_CloseConnect(); break;
-        case 16: _t->slot_StateChanged((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
-        case 17: _t->slots_loginState((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: _t->slots_OnUpdateIOCard((*reinterpret_cast< int*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 10: _t->slots_SaveCountBytime(); break;
+        case 11: _t->slots_SaveCountByShift(); break;
+        case 12: _t->slots_UpdateRecordSet(); break;
+        case 13: _t->slots_UpdateShiftSet(); break;
+        case 14: _t->slots_CloseConnect(); break;
+        case 15: _t->slot_StateChanged((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
+        case 16: _t->slots_loginState((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 17: _t->slots_SaveRecord(); break;
         default: ;
         }
     }

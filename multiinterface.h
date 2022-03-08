@@ -63,7 +63,7 @@ public:
 	void onServerConnected(QString IPAddress,bool nState);
 	void ClearCount(bool isChangeShift = true);
 	void UpdateCountForShow(bool isFirst=false);
-	void SaveCountInfo();
+	void SaveCountInfo(SaveReportType pType,QString pTxt="");
 	void SaveToDatebase();
 	void SendBasicNet(StateEnum,QString);
 	void ChangeVncState(int);
@@ -83,7 +83,6 @@ public slots:
 	void ServerNewConnection();
 	void onServerDataReady();
 	void slots_ConnectState();
-	void onDisconnect();
 	void slots_OnUpdateIOCard(int*,int);
 	void slots_SaveCountBytime();
 	void slots_SaveCountByShift();
@@ -92,6 +91,8 @@ public slots:
 	void slots_CloseConnect();
 	void slot_StateChanged(QAbstractSocket::SocketState);
 	void slots_loginState(int);
+	void slots_SaveRecord();
+	//void slots_disConnected();
 public:
 	static DWORD WINAPI DataHanldThread( void *arg );
 	static DWORD WINAPI DataCountThread( void *arg );
@@ -129,6 +130,8 @@ public:
 	int currentShift;
 	POINT gcPosition;
 	QByteArray m_buffer;
+	QTcpSocket *clientSocket[3];
+
 private:
 	Ui::MultiInterfaceClass ui;
 };

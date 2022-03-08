@@ -44,6 +44,12 @@ enum UnitEnum
 	BACKING//后端
 };
 
+enum SaveReportType
+{
+	ByTime,		//按整点时间
+	ByShift		//按班次
+};
+
 struct IpStruct
 {
 	QString ipAddress; //ip地址

@@ -25,6 +25,7 @@ MultiInterface::MultiInterface(QWidget *parent)
 	}
 	connect(nWidgetCount ,SIGNAL(updateRecordSet()),this,SLOT(slots_UpdateRecordSet()));
 	connect(nWidgetCount ,SIGNAL(updateShiftSet()),this,SLOT(slots_UpdateShiftSet()));
+	connect(nWidgetCount,SIGNAL(signal_SaveRecord()),this,SLOT(slots_SaveRecord()));
 
 	timerSaveList = new QTimer(this);
 	timerSaveList->setInterval(60*1000);//每分钟触发一次
@@ -33,6 +34,7 @@ MultiInterface::MultiInterface(QWidget *parent)
 	timerSaveList->start();
 
 	m_Datebase->queryLastData(nAllCheckNum,nAllFailNum,nRunInfo);
+	m_Datebase->queryLastTimeData(LastRunInfo);
 	UpdateCountForShow(true);
 }
 
@@ -123,6 +125,7 @@ void MultiInterface::InitConfig()
 	n_StartTime = QDateTime::currentDateTime();
 	GetCursorPos(&gcPosition);
 }
+
 void MultiInterface::InitSocket()
 {
 	m_temptcpServer = new QTcpServer(this);
@@ -131,6 +134,7 @@ void MultiInterface::InitSocket()
 	nAllCheckNum = 0;
 	nAllFailNum = 0;
 }
+
 void MultiInterface::InitConnect()
 {
 	qRegisterMetaType<cErrorInfo>("cErrorInfo"); 
@@ -158,9 +162,9 @@ void MultiInterface::InitConnect()
 	connect(this,SIGNAL(UpdateIOCard(int*,int)),this,SLOT(slots_OnUpdateIOCard(int*,int)));
 
 	nConnectState = new QTimer;
-	nConnectState->setInterval(60*1000);
+	nConnectState->setInterval(10*1000);
 	connect(nConnectState,SIGNAL(timeout()),this,SLOT(slots_ConnectState()));
-	//nConnectState->start();
+	nConnectState->start();
 	nScreenTime = new QTimer;
 	nScreenTime->setInterval(60*1000*5);//5分钟没人操作就关闭
 	connect(nScreenTime,SIGNAL(timeout()),this,SLOT(slots_CloseConnect()));
@@ -257,8 +261,42 @@ void MultiInterface::slots_loginState(int nPermiss)
 	nUserWidget->nPermission = nPermiss;
 	SendBasicNet(FRONTSTATE,QString::number(nPermiss));
 }
+
+void MultiInterface::slots_SaveRecord()
+{
+	//nTmpcountData = nRunInfo;
+	SaveCountInfo(ByTime,tr("Save"));
+}
+/*
+void MultiInterface::slots_disConnected()
+{
+	Logfile->write(tr("disconnect"),OperationLog);
+	QTcpSocket* tcp = static_cast<QTcpSocket*>(sender());
+	onServerConnected(tcp->peerAddress().toString(),false);
+}
+*/
 void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 {
+	Logfile->write(QString("TcpSever send  nState:%1").arg(nState),CheckLog);
+	for (int i=0;i<3;i++)
+	{
+		if(clientSocket[i] != NULL && IPAddress[i].nstate)
+		{
+			MyStruct nData;
+			nData.nState = nState;
+			nData.nCount = sizeof(MyStruct);
+			if(nTemp != "NULL")
+			{
+				strcpy_s(nData.nTemp,nTemp.toLocal8Bit().data());
+			}else{
+				strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
+			}
+			int ret = clientSocket[i]->write((char*)&nData,sizeof(MyStruct));
+			Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(clientSocket[i]->peerAddress().toString()),CheckLog);
+		}
+	}
+	
+	/*
 	QList<QTcpSocket *> m_tcps = m_temptcpServer->findChildren<QTcpSocket *>();
 	foreach (QTcpSocket *tcp, m_tcps)
 	{
@@ -271,8 +309,10 @@ void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 		}else{
 			strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
 		}
-		tcp->write((char*)&nData,sizeof(MyStruct));
+		int ret = tcp->write((char*)&nData,sizeof(MyStruct));
+		Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(tcp->peerAddress().toString()),CheckLog);
 	}
+	*/
 }
 void MultiInterface::slots_clickAccont(int nTest)
 {
@@ -345,7 +385,7 @@ void MultiInterface::slots_SaveCountBytime()
 			if (!isSave)
 			{
 				SaveToDatebase();
-				SaveCountInfo();
+				SaveCountInfo(ByTime);
 				isSave =true;
 			}
 		}
@@ -359,7 +399,7 @@ void MultiInterface::slots_SaveCountBytime()
 			if (!isSave)  
 			{
 				SaveToDatebase();
-				SaveCountInfo();
+				SaveCountInfo(ByTime);
 				isSave =true;
 			}
 		}
@@ -377,6 +417,7 @@ void MultiInterface::slots_SaveCountByShift()
 		if(currentShift != 0)
 		{
 			//qDebug()<<"Shift1";
+			SaveCountInfo(ByShift,tr("Shift1"));
 			ClearCount();
 			currentShift = 0;
 		}
@@ -386,6 +427,7 @@ void MultiInterface::slots_SaveCountByShift()
 		if(currentShift != 1)
 		{
 			//qDebug()<<"Shift2";
+			SaveCountInfo(ByShift,tr("Shift2"));
 			ClearCount();
 			currentShift = 1;
 		}
@@ -395,6 +437,7 @@ void MultiInterface::slots_SaveCountByShift()
 		if(currentShift != 2)
 		{
 			//qDebug()<<"Shift3";
+			SaveCountInfo(ByShift,tr("Shift3"));
 			ClearCount();
 			currentShift = 2;
 		}
@@ -446,27 +489,32 @@ void MultiInterface::slots_CloseConnect()
 }
 void MultiInterface::slots_ConnectState()
 {
-	/*for(int i=0;i<3;i++)
+	for(int i=0;i<3;i++)
 	{
 		if(IPAddress[i].nstate)
 		{
-			int timeLength = QTime::currentTime().minute();
-			if((timeLength-IPAddress[i].startTime+60)%60 >5)
+			int timeLength = QTime::currentTime().second();
+			if((timeLength-IPAddress[i].startTime+60)%60 > 25)
 			{
-				onServerConnected(IPAddress[i].ipAddress,0);
+				onServerConnected(IPAddress[i].ipAddress,false);
 				IPAddress[i].nstate = false;
-				Logfile->write(QString("%1-lost connect %2--%3!").arg(i).arg(timeLength).arg(IPAddress[i].startTime),OperationLog);
+				Logfile->write(QString("Overtime:%3 , IP:%1 , lastTime:%2 ").arg(IPAddress[i].ipAddress).arg(IPAddress[i].startTime).arg((timeLength-IPAddress[i].startTime+60)%60),CheckLog);
 			}else{
-				onServerConnected(IPAddress[i].ipAddress,1);
+				onServerConnected(IPAddress[i].ipAddress,true);
 			}
 		}
-	}*/
+	}
 }
-void MultiInterface::SaveCountInfo()
+void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 {
 	bool bIsEmptyFile = false;
 	QString strFileName;
-	strFileName = AppPaths.AppPath + "CountInfo/timeCount/";
+	if(pType == ByTime)
+		strFileName = AppPaths.AppPath + "CountInfo/timeCount/";
+	else if(pType == ByShift)
+		strFileName = AppPaths.AppPath + "CountInfo/shiftCount/";
+	else
+		strFileName = AppPaths.AppPath + "CountInfo/otherCount/";
 	QDir temp;
 	bool exist = temp.exists(strFileName);
 	if(!exist)
@@ -489,6 +537,11 @@ void MultiInterface::SaveCountInfo()
 	{
 		return;
 	}
+	cErrorInfo wData;
+	/*if (pType == ByShift)*/
+		wData = nRunInfo;
+// 	else
+// 		wData = nTmpcountData;
 	QFile writeFile(strFileName);
 	//读入流和写入流
 	QTextStream writeStream(&writeFile);
@@ -497,18 +550,22 @@ void MultiInterface::SaveCountInfo()
 		writeStream<<"\n";
 	}
 	QTime time = QTime::currentTime();
-	writeStream<<tr("Time:  %1:%2:%3").arg(time.hour()).arg(time.minute()).arg(time.second())<<"\t";
-	writeStream<<tr("All Count:  %1").arg(nTmpcountData.iAllCount)<<"\t";
-	writeStream<<tr("Fail Count:  %1").arg(nTmpcountData.GetFailCount())<<"\t";
-	writeStream<<tr("Fail Rate:  %1%").arg(nTmpcountData.GetFailRate()*100 ,2,'f',2)<<"\n";
+	if(pType == ByShift)
+		writeStream<<tr("Shift:%1").arg(pTxt)<<"\t";
+	else if(pType == ByTime && pTxt != "")
+		writeStream<<QString("%1").arg(pTxt)<<"\t";
+	writeStream<<tr("Time:%1:%2:%3").arg(time.hour()).arg(time.minute()).arg(time.second())<<"\t";
+	writeStream<<tr("All Count:  %1").arg(wData.iAllCount)<<"\t";
+	writeStream<<tr("Fail Count:  %1").arg(wData.GetFailCount())<<"\t";
+	writeStream<<tr("Fail Rate:  %1%").arg(wData.GetFailRate()*100 ,2,'f',2)<<"\n";
 
-	writeStream<<tr("Front Count:  %1").arg(nTmpcountData.GetFrontCount())<<"\t";
-	writeStream<<tr("Clamp Count:  %1").arg(nTmpcountData.GetClampCount())<<"\t";
-	writeStream<<tr("Rear Count:  %1").arg(nTmpcountData.GetRearCount())<<"\n";
+	writeStream<<tr("Front Count:  %1").arg(wData.GetFrontCount())<<"\t";
+	writeStream<<tr("Clamp Count:  %1").arg(wData.GetClampCount())<<"\t";
+	writeStream<<tr("Rear Count:  %1").arg(wData.GetRearCount())<<"\n";
 
 	for(int i=1;i<=m_ErrorTypeInfo.iErrorTypeCount;i++)
 	{
-		writeStream<<m_ErrorTypeInfo.iErrorType[i] + ":" + QString::number(nTmpcountData.GetErrorByTypeCount(i))<<"\t";
+		writeStream<<m_ErrorTypeInfo.iErrorType[i] + ":" + QString::number(wData.GetErrorByTypeCount(i))<<"\t";
 	}
 	writeStream<<"\n";
 	writeStream<<tr("Results")<<"\t\t";
@@ -518,9 +575,9 @@ void MultiInterface::SaveCountInfo()
 	writeStream<<tr("rear") <<"\t";
 	writeStream<<"\n";
 
-	for(int i=1;i<m_ErrorTypeInfo.iErrorTypeCount;i++)
+	for(int i=1;i<= m_ErrorTypeInfo.iErrorTypeCount;i++)
 	{
-		int pErrorByType = nTmpcountData.GetErrorByTypeCount(i);
+		int pErrorByType = wData.GetErrorByTypeCount(i);
 		if(pErrorByType != 0)
 		{
 			QString tempString=m_ErrorTypeInfo.iErrorType[i];
@@ -530,9 +587,9 @@ void MultiInterface::SaveCountInfo()
 			else
 				writeStream<<"\t";
 			writeStream<<QString::number(pErrorByType)<<"\t";
-			writeStream<<QString::number(nTmpcountData.iFrontErrorByType[i])<<"\t";
-			writeStream<<QString::number(nTmpcountData.iClampErrorByType[i])<<"\t";
-			writeStream<<QString::number(nTmpcountData.iRearErrorByType[i])<<"\n";
+			writeStream<<QString::number(wData.iFrontErrorByType[i])<<"\t";
+			writeStream<<QString::number(wData.iClampErrorByType[i])<<"\t";
+			writeStream<<QString::number(wData.iRearErrorByType[i])<<"\n";
 		}
 	}
 	writeStream<<"\n";
@@ -548,18 +605,12 @@ void MultiInterface::SaveCountInfo()
 void MultiInterface::SaveToDatebase()
 {
 	QDateTime dateTime = QDateTime::currentDateTime();
-	nTmpcountData += nRunInfo - LastRunInfo;
-// 	bool ret = m_Datebase->insert(dateTime.toString("yyyyMMddhhmm")
-// 					,nTmpcountData.iAllCount
-// 					,nTmpcountData.iFrontErrorByType
-// 					,nTmpcountData.iClampErrorByType
-// 					,nTmpcountData.iRearErrorByType  );
-
-	bool ret = m_Datebase->insert(dateTime.toString("yyyyMMddhhmm"),nTmpcountData);
-
+	nTmpcountData = nRunInfo - LastRunInfo;
 	LastRunInfo = nRunInfo;
 
+	m_Datebase->insertLastTimeData(LastRunInfo);
 
+	bool ret = m_Datebase->insert(dateTime.toString("yyyyMMddhhmm"),nTmpcountData);
 	QDate dateSelecte = QDate::currentDate();
 	QString temp = dateSelecte.toString(Qt::ISODate);
 	temp.replace("-", "");
@@ -581,37 +632,19 @@ void MultiInterface::SaveToDatebase()
 void MultiInterface::ServerNewConnection()
 {
 	QTcpSocket* tcp = m_temptcpServer->nextPendingConnection(); //获取新的客户端信息
+	Logfile->write(QString("connected IP:%1").arg(tcp->peerAddress().toString()),CheckLog);
 	if(tcp->peerAddress().toString() == IP1)
-	{
-		ui.checkBox->setChecked(true);
-	}
+		clientSocket[0] = tcp ;
 	else if(tcp->peerAddress().toString() == IP2)
-	{
-		ui.checkBox_2->setChecked(true);
-	}
+		clientSocket[1] = tcp ;
 	else if(tcp->peerAddress().toString() == IP3)
-	{
-		ui.checkBox_3->setChecked(true);
-	}
+		clientSocket[2] = tcp ;
+	onServerConnected(tcp->peerAddress().toString(),true);
 	connect(tcp, SIGNAL(readyRead()), this, SLOT(onServerDataReady()));
-	connect(tcp,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(slot_StateChanged(QAbstractSocket::SocketState)));
+	//connect(tcp,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(slot_StateChanged(QAbstractSocket::SocketState)));
+	//connect(tcp, SIGNAL(disconnect()), this, SLOT(slots_disConnected()));
 }
-void MultiInterface::onDisconnect()
-{
-	QTcpSocket* tcp = static_cast<QTcpSocket*>(sender());
-	if(tcp->peerAddress().toString() == IP1)
-	{
-		ui.checkBox->setChecked(false);
-	}
-	else if(tcp->peerAddress().toString() == IP2)
-	{
-		ui.checkBox_2->setChecked(false);
-	}
-	else if(tcp->peerAddress().toString() == IP3)
-	{
-		ui.checkBox_3->setChecked(false);
-	}
-}
+
 void MultiInterface::slot_StateChanged(QAbstractSocket::SocketState state)
 {
 	switch(state)
@@ -683,20 +716,23 @@ void MultiInterface::onServerDataReady()
 				}
 				break;
 			case CONNECT:
-				/*if(((MyStruct*)m_buffer.data())->nUnit == LEADING)
 				{
-					IPAddress[0].nstate = true;
-					IPAddress[0].startTime = nTime.minute();
-				}else if(((MyStruct*)m_buffer.data())->nUnit == CLAMPING)
-				{
-					IPAddress[1].nstate = true;
-					IPAddress[1].startTime = nTime.minute();
-				}else if(((MyStruct*)m_buffer.data())->nUnit == BACKING)
-				{
-					IPAddress[2].nstate = true;
-					IPAddress[2].startTime = nTime.minute();
-				}
-				SendBasicNet(CONNECT,"NULL");*/
+					if(((MyStruct*)m_buffer.data())->nUnit == LEADING)
+					{
+						IPAddress[0].nstate = true;
+						IPAddress[0].startTime = nTime.second();
+					}else if(((MyStruct*)m_buffer.data())->nUnit == CLAMPING)
+					{
+						IPAddress[1].nstate = true;
+						IPAddress[1].startTime = nTime.second();
+					}else if(((MyStruct*)m_buffer.data())->nUnit == BACKING)
+					{
+						IPAddress[2].nstate = true;
+						IPAddress[2].startTime = nTime.second();
+					}
+					Logfile->write(QString("IP:%1 CONNECT.").arg(m_tcpSocket->peerAddress().toString()),CheckLog);
+				}	
+				//SendBasicNet(CONNECT,"NULL");
 				break;
 			case LOCKSCREEN:
 				m_ScreenLevel = QString::number(((MyStruct*)m_buffer.data())->nFail);
@@ -731,12 +767,12 @@ void MultiInterface::onServerDataReady()
 DWORD WINAPI MultiInterface::DataCountThread( void *arg )
 {
 	MultiInterface* pThis = ( MultiInterface* )arg;
-	MyErrorType nErrorFristData[256]={0};
-	MyErrorType nErrorClampData[256]={0};
-	MyErrorType nErrorBACKData[256]={0};
+	MyErrorType nErrorFristData[10]={0};
+	MyErrorType nErrorClampData[10]={0};
+	MyErrorType nErrorBACKData[10]={0};
 	QByteArray buffer[3]={0};
 	char* ptr[3];
-	int nDataSize = 256;
+	int nDataSize = 10;
 	while (pThis->nOver)
 	{
 		if(pThis->nDataCount[0].count()>0 && pThis->nDataCount[1].count()>0 && pThis->nDataCount[2].count()>0)
@@ -759,21 +795,21 @@ DWORD WINAPI MultiInterface::DataCountThread( void *arg )
 				if((nErrorFristData[i].nType > 0 && nErrorFristData[i].nType < 50)||(nErrorClampData[i].nType > 0 && nErrorClampData[i].nType < 50)||(nErrorBACKData[i].nType > 0 && nErrorBACKData[i].nType<50))//综合有缺陷，计数加1
 				{
 					pThis->nRunInfo.iFailCount += 1;
-					if(nErrorFristData[i].nErrorArea < nErrorClampData[i].nErrorArea && nErrorClampData[i].nErrorArea > nErrorBACKData[i].nErrorArea)
+					if(nErrorFristData[i].nErrorArea <= nErrorClampData[i].nErrorArea && nErrorClampData[i].nErrorArea >= nErrorBACKData[i].nErrorArea)
 					{
 						pThis->nRunInfo.ClampCount += 1;
 						pThis->nRunInfo.iClampErrorByType[nErrorClampData[i].nType] += 1;
 						pThis->nRunInfo.iErrorByType[nErrorClampData[i].nType] += 1;
 						pThis->nSendData[i] = nErrorClampData[i];
 					}
-					else if(nErrorFristData[i].nErrorArea < nErrorBACKData[i].nErrorArea && nErrorClampData[i].nErrorArea < nErrorBACKData[i].nErrorArea)
+					else if(nErrorFristData[i].nErrorArea <= nErrorBACKData[i].nErrorArea && nErrorClampData[i].nErrorArea <= nErrorBACKData[i].nErrorArea)
 					{
 						pThis->nRunInfo.RearCount += 1;
 						pThis->nRunInfo.iRearErrorByType[nErrorBACKData[i].nType] += 1;
 						pThis->nRunInfo.iErrorByType[nErrorBACKData[i].nType] += 1;
 						pThis->nSendData[i] = nErrorBACKData[i];
 					}
-					else if(nErrorFristData[i].nErrorArea > nErrorClampData[i].nErrorArea && nErrorFristData[i].nErrorArea > nErrorBACKData[i].nErrorArea)
+					else if(nErrorFristData[i].nErrorArea >= nErrorClampData[i].nErrorArea && nErrorFristData[i].nErrorArea >= nErrorBACKData[i].nErrorArea)
 					{
 						pThis->nRunInfo.FrontCount += 1;
 						pThis->nRunInfo.iFrontErrorByType[nErrorFristData[i].nType] += 1;
@@ -880,7 +916,10 @@ void MultiInterface::ClearCount(bool isChangeShift)
 	}
 	else
 	{
-		nTmpcountData += nRunInfo - LastRunInfo;
+		//nTmpcountData = nRunInfo - LastRunInfo;
+		SaveCountInfo(ByTime,tr("CountClear"));
+		SaveCountInfo(ByShift,tr("CountClear"));
+		nTmpcountData.Clear();
 		nRunInfo.Clear();
 		LastRunInfo.Clear();
 		SendBasicNet(CLEAR,"Clear");

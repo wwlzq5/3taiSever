@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'widget_count.ui'
 **
-** Created: Mon Feb 28 09:32:27 2022
+** Created: Tue Mar 8 15:12:40 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -101,18 +101,19 @@ public:
     QFrame *line_2;
     DHBaseWidget *widget_2;
     QGridLayout *gridLayout_3;
-    QCalendarWidget *calendarWidget;
     QComboBox *comboBox;
     QPushButton *pushButton_openRecord;
+    QCalendarWidget *calendarWidget;
     QPushButton *pushButton_deleteRecord;
+    QPushButton *pushButton_SaveRecord;
     DHBaseWidget *widget_saveRecord;
     QGridLayout *gridLayout_saveRecord;
-    QCheckBox *checkBox_saveRecord;
+    QRadioButton *radioButton_30minite;
+    QRadioButton *radioButton_60minite;
     QHBoxLayout *horizontalLayout_2;
     QPushButton *pushButton_saveRecordOK;
     QPushButton *pushButton_saveRecordCancel;
-    QRadioButton *radioButton_30minite;
-    QRadioButton *radioButton_60minite;
+    QCheckBox *checkBox_saveRecord;
     DHBaseWidget *widget_ShiftSet;
     QVBoxLayout *verticalLayout_shitf;
     QHBoxLayout *horizontalLayout_4;
@@ -588,11 +589,6 @@ public:
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         gridLayout_3->setContentsMargins(-1, 30, -1, -1);
-        calendarWidget = new QCalendarWidget(widget_2);
-        calendarWidget->setObjectName(QString::fromUtf8("calendarWidget"));
-
-        gridLayout_3->addWidget(calendarWidget, 0, 0, 1, 3);
-
         comboBox = new QComboBox(widget_2);
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
         QSizePolicy sizePolicy4(QSizePolicy::Minimum, QSizePolicy::Fixed);
@@ -601,30 +597,42 @@ public:
         sizePolicy4.setHeightForWidth(comboBox->sizePolicy().hasHeightForWidth());
         comboBox->setSizePolicy(sizePolicy4);
         comboBox->setMinimumSize(QSize(100, 38));
-        comboBox->setMaximumSize(QSize(80, 38));
+        comboBox->setMaximumSize(QSize(100, 38));
 
-        gridLayout_3->addWidget(comboBox, 1, 0, 1, 1);
+        gridLayout_3->addWidget(comboBox, 1, 1, 1, 1);
 
         pushButton_openRecord = new QPushButton(widget_2);
         pushButton_openRecord->setObjectName(QString::fromUtf8("pushButton_openRecord"));
         sizePolicy4.setHeightForWidth(pushButton_openRecord->sizePolicy().hasHeightForWidth());
         pushButton_openRecord->setSizePolicy(sizePolicy4);
         pushButton_openRecord->setMinimumSize(QSize(100, 40));
-        pushButton_openRecord->setMaximumSize(QSize(80, 40));
+        pushButton_openRecord->setMaximumSize(QSize(100, 40));
         QFont font3;
         font3.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
         font3.setPointSize(10);
         pushButton_openRecord->setFont(font3);
 
-        gridLayout_3->addWidget(pushButton_openRecord, 1, 1, 1, 1);
+        gridLayout_3->addWidget(pushButton_openRecord, 1, 2, 1, 1);
+
+        calendarWidget = new QCalendarWidget(widget_2);
+        calendarWidget->setObjectName(QString::fromUtf8("calendarWidget"));
+
+        gridLayout_3->addWidget(calendarWidget, 0, 0, 1, 4);
 
         pushButton_deleteRecord = new QPushButton(widget_2);
         pushButton_deleteRecord->setObjectName(QString::fromUtf8("pushButton_deleteRecord"));
         pushButton_deleteRecord->setMinimumSize(QSize(100, 40));
-        pushButton_deleteRecord->setMaximumSize(QSize(80, 40));
+        pushButton_deleteRecord->setMaximumSize(QSize(100, 40));
         pushButton_deleteRecord->setFont(font3);
 
-        gridLayout_3->addWidget(pushButton_deleteRecord, 1, 2, 1, 1);
+        gridLayout_3->addWidget(pushButton_deleteRecord, 1, 3, 1, 1);
+
+        pushButton_SaveRecord = new QPushButton(widget_2);
+        pushButton_SaveRecord->setObjectName(QString::fromUtf8("pushButton_SaveRecord"));
+        pushButton_SaveRecord->setMinimumSize(QSize(100, 40));
+        pushButton_SaveRecord->setMaximumSize(QSize(100, 40));
+
+        gridLayout_3->addWidget(pushButton_SaveRecord, 2, 1, 1, 1);
 
 
         verticalLayout_3->addWidget(widget_2);
@@ -637,11 +645,17 @@ public:
         gridLayout_saveRecord->setContentsMargins(11, 11, 11, 11);
         gridLayout_saveRecord->setObjectName(QString::fromUtf8("gridLayout_saveRecord"));
         gridLayout_saveRecord->setContentsMargins(-1, 30, -1, -1);
-        checkBox_saveRecord = new QCheckBox(widget_saveRecord);
-        checkBox_saveRecord->setObjectName(QString::fromUtf8("checkBox_saveRecord"));
-        checkBox_saveRecord->setFont(font1);
+        radioButton_30minite = new QRadioButton(widget_saveRecord);
+        radioButton_30minite->setObjectName(QString::fromUtf8("radioButton_30minite"));
+        radioButton_30minite->setFont(font1);
 
-        gridLayout_saveRecord->addWidget(checkBox_saveRecord, 0, 0, 1, 1);
+        gridLayout_saveRecord->addWidget(radioButton_30minite, 2, 0, 1, 2);
+
+        radioButton_60minite = new QRadioButton(widget_saveRecord);
+        radioButton_60minite->setObjectName(QString::fromUtf8("radioButton_60minite"));
+        radioButton_60minite->setFont(font1);
+
+        gridLayout_saveRecord->addWidget(radioButton_60minite, 3, 0, 1, 2);
 
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setSpacing(6);
@@ -663,19 +677,13 @@ public:
         horizontalLayout_2->addWidget(pushButton_saveRecordCancel);
 
 
-        gridLayout_saveRecord->addLayout(horizontalLayout_2, 3, 0, 1, 1);
+        gridLayout_saveRecord->addLayout(horizontalLayout_2, 4, 0, 1, 2);
 
-        radioButton_30minite = new QRadioButton(widget_saveRecord);
-        radioButton_30minite->setObjectName(QString::fromUtf8("radioButton_30minite"));
-        radioButton_30minite->setFont(font1);
+        checkBox_saveRecord = new QCheckBox(widget_saveRecord);
+        checkBox_saveRecord->setObjectName(QString::fromUtf8("checkBox_saveRecord"));
+        checkBox_saveRecord->setFont(font1);
 
-        gridLayout_saveRecord->addWidget(radioButton_30minite, 1, 0, 1, 1);
-
-        radioButton_60minite = new QRadioButton(widget_saveRecord);
-        radioButton_60minite->setObjectName(QString::fromUtf8("radioButton_60minite"));
-        radioButton_60minite->setFont(font1);
-
-        gridLayout_saveRecord->addWidget(radioButton_60minite, 2, 0, 1, 1);
+        gridLayout_saveRecord->addWidget(checkBox_saveRecord, 1, 0, 1, 2);
 
 
         verticalLayout_3->addWidget(widget_saveRecord);
@@ -775,7 +783,6 @@ public:
 
         verticalLayout_3->setStretch(0, 1);
         verticalLayout_3->setStretch(1, 3);
-        verticalLayout_3->setStretch(2, 2);
         verticalLayout_3->setStretch(3, 2);
 
         horizontalLayout->addWidget(widget_countset);
@@ -813,11 +820,12 @@ public:
         );
         pushButton_openRecord->setText(QApplication::translate("widget_count", "Open record", 0, QApplication::UnicodeUTF8));
         pushButton_deleteRecord->setText(QApplication::translate("widget_count", "Delete record", 0, QApplication::UnicodeUTF8));
-        checkBox_saveRecord->setText(QApplication::translate("widget_count", "Save Record", 0, QApplication::UnicodeUTF8));
-        pushButton_saveRecordOK->setText(QApplication::translate("widget_count", "OK", 0, QApplication::UnicodeUTF8));
-        pushButton_saveRecordCancel->setText(QApplication::translate("widget_count", "Cancel", 0, QApplication::UnicodeUTF8));
+        pushButton_SaveRecord->setText(QApplication::translate("widget_count", "Save Record", 0, QApplication::UnicodeUTF8));
         radioButton_30minite->setText(QApplication::translate("widget_count", "Save record every 30minite", 0, QApplication::UnicodeUTF8));
         radioButton_60minite->setText(QApplication::translate("widget_count", "Save record every 60minite", 0, QApplication::UnicodeUTF8));
+        pushButton_saveRecordOK->setText(QApplication::translate("widget_count", "OK", 0, QApplication::UnicodeUTF8));
+        pushButton_saveRecordCancel->setText(QApplication::translate("widget_count", "Cancel", 0, QApplication::UnicodeUTF8));
+        checkBox_saveRecord->setText(QApplication::translate("widget_count", "Save Record", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("widget_count", "Shift1:", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("widget_count", "Shift2:", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("widget_count", "Shift3:", 0, QApplication::UnicodeUTF8));
