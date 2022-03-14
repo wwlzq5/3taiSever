@@ -2,7 +2,7 @@
 #include <QDebug>
 
 MultiInterface *pMainFrm;
-
+#define CUSTOMALERT 3
 MultiInterface::MultiInterface(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -36,6 +36,10 @@ MultiInterface::MultiInterface(QWidget *parent)
 	m_Datebase->queryLastData(nAllCheckNum,nAllFailNum,nRunInfo);
 	m_Datebase->queryLastTimeData(LastRunInfo);
 	UpdateCountForShow(true);
+	for(int i=0;i<3;i++)
+	{
+		clientSocket[i] = NULL;
+	}
 }
 
 MultiInterface::~MultiInterface()
@@ -97,11 +101,18 @@ void MultiInterface::InitConfig()
 	QSettings PLCStatusiniset(AppPaths.PLCAlertPath,QSettings::IniFormat);
 	PLCStatusiniset.setIniCodec(QTextCodec::codecForName("GB2312"));
 	QString strSession = QString("/StatusType/total");
-	int  StatusTypeNumber= PLCStatusiniset.value(strSession,0).toInt();
+	StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
 	for (int i=1;i<=StatusTypeNumber;i++)
 	{
 		strSession = QString("/StatusType/%1").arg(i);
 		m_PLCAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
+	}
+	strSession = QString("/CutomAlert/total");
+	StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
+	for (int i=1;i <= 3;i++)
+	{
+		strSession = QString("/CutomAlert/%1").arg(i);
+		m_CustomAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
 	}
 	Logfile = new CLogFile();
 	nOver  = true;
@@ -278,22 +289,20 @@ void MultiInterface::slots_disConnected()
 void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 {
 	Logfile->write(QString("TcpSever send  nState:%1").arg(nState),CheckLog);
-	for (int i=0;i<3;i++)
+	QList<QTcpSocket *> m_tcps = m_temptcpServer->findChildren<QTcpSocket *>();
+	foreach (QTcpSocket *tcp, m_tcps)
 	{
-		if(clientSocket[i] != NULL && IPAddress[i].nstate)
+		MyStruct nData;
+		nData.nState = nState;
+		nData.nCount = sizeof(MyStruct);
+		if(nTemp != "NULL")
 		{
-			MyStruct nData;
-			nData.nState = nState;
-			nData.nCount = sizeof(MyStruct);
-			if(nTemp != "NULL")
-			{
-				strcpy_s(nData.nTemp,nTemp.toLocal8Bit().data());
-			}else{
-				strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
-			}
-			int ret = clientSocket[i]->write((char*)&nData,sizeof(MyStruct));
-			Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(clientSocket[i]->peerAddress().toString()),CheckLog);
+			strcpy_s(nData.nTemp,nTemp.toLocal8Bit().data());
+		}else{
+			strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
 		}
+		int ret = tcp->write((char*)&nData,sizeof(MyStruct));
+		Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(tcp->peerAddress().toString()),CheckLog);
 	}
 	
 	/*
@@ -872,7 +881,14 @@ void MultiInterface::CalculateData(QByteArray buffer)
 			{
 				emit sianal_WarnMessage(nPlcTypeid,NULL);
 			}else{
-				emit sianal_WarnMessage(nPlcTypeid,m_PLCAlertType.at(nPlcTypeid));
+				Logfile->write(QString("into %1").arg(nPlcTypeid),CheckLog);
+				if(nPlcTypeid<32)//传统报警
+				{
+					emit sianal_WarnMessage(nPlcTypeid,m_PLCAlertType.at(nPlcTypeid));
+				}else{//自定义报警
+					if(nPlcTypeid - 32 < StatusTypeNumber)
+					emit sianal_WarnMessage(nPlcTypeid,m_CustomAlertType.at(nPlcTypeid-32));
+				}
 			}
 		}
 	}

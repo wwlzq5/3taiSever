@@ -83,13 +83,11 @@ void Widget_Warning::slot_ShowMessage(int warningType, QString warningInfo)
 #else
 	if(warningType == -1)
 	{
-		//hide();
 		pMainFrm->SendBasicNet(SEVERS,"NULL");
 	}else{
 		labelWarningInfo->setText(warningInfo);
 		QDesktopWidget* desktopWidget = QApplication::desktop();
 		move(desktopWidget->width()-400,desktopWidget->height()-300);
-		//show();
 		pMainFrm->SendBasicNet(SEVERS,warningInfo);
 	}
 #endif

@@ -103,6 +103,7 @@ public:
 	QMutex nCountLock;
 	QTimer* nConnectState;
 	QStringList m_PLCAlertType;
+	QStringList m_CustomAlertType;
 	QVector<IpStruct> IPAddress;
 	QTcpServer* m_temptcpServer;
 	QSignalMapper* signal_mapper;
@@ -122,6 +123,7 @@ public:
 	cErrorInfo nRunInfo,LastRunInfo,nTmpcountData;
 	SystemConfigInfo SysConfigInfo;
 public:
+	int StatusTypeNumber;
 	int nAllCheckNum;
 	int nAllFailNum;
 	QDateTime n_StartTime;
