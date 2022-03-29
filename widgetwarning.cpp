@@ -59,7 +59,7 @@ void Widget_Warning::slot_ShowMessage(int warningType, QString warningInfo)
 	{
 		return;
 	}
-	iWarningType = iWarningType;
+	iWarningType = warningType;
 #ifdef VNCTEST
 	if(warningType == -1)
 	{
@@ -88,7 +88,10 @@ void Widget_Warning::slot_ShowMessage(int warningType, QString warningInfo)
 		labelWarningInfo->setText(warningInfo);
 		QDesktopWidget* desktopWidget = QApplication::desktop();
 		move(desktopWidget->width()-400,desktopWidget->height()-300);
-		pMainFrm->SendBasicNet(SEVERS,warningInfo);
+		if(warningInfo != "")
+		{
+			pMainFrm->SendBasicNet(SEVERS,warningInfo);
+		}
 	}
 #endif
 }

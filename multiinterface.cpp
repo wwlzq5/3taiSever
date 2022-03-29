@@ -7,16 +7,19 @@ MultiInterface::MultiInterface(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+
 	setWindowFlags (Qt::FramelessWindowHint);
 	pMainFrm = this;
 	setWindowIcon(QIcon("./Resources/LOGO.png"));
 	setCentralWidget(ui.centralWidget);
-
+	for (int i=0;i<3;i++)
+	{
+		clientSocket[i]=NULL;
+	}
 	InitConfig();
 	InitSocket();
 	InitConnect();
 	m_Datebase =new DataBase(AppPaths.AppPath);
-	mVNC_window=new VNC_widget();
 	for(int i=0;i<256;i++)
 	{
 		nSendData[i].id = 0;
@@ -36,10 +39,6 @@ MultiInterface::MultiInterface(QWidget *parent)
 	m_Datebase->queryLastData(nAllCheckNum,nAllFailNum,nRunInfo);
 	m_Datebase->queryLastTimeData(LastRunInfo);
 	UpdateCountForShow(true);
-	for(int i=0;i<3;i++)
-	{
-		clientSocket[i] = NULL;
-	}
 }
 
 MultiInterface::~MultiInterface()
@@ -109,17 +108,19 @@ void MultiInterface::InitConfig()
 	}
 	strSession = QString("/CutomAlert/total");
 	StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
-	for (int i=1;i <= 3;i++)
+	for (int i=1;i <= CUSTOMALERT;i++)
 	{
 		strSession = QString("/CutomAlert/%1").arg(i);
 		m_CustomAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
+		//qDebug()<<m_CustomAlertType[i-1];
 	}
 	Logfile = new CLogFile();
 	nOver  = true;
 	CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)DataHanldThread, this, 0, NULL );
 	CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)DataCountThread, this, 0, NULL );
 
-	nSaveDataAddress = new int[HORIZONTAL24];
+	//nSaveDataAddress = new int[HORIZONTAL24];
+	nSaveDataAddress = new int[24];
 	
 	IpStruct nIptemp;
 	nIptemp.ipAddress=IP1;
@@ -235,13 +236,12 @@ void MultiInterface::InitConnect()
 	ui.pushButton_open3->setVisible(false);
 	ui.pushButton_Alert->setVisible(false);
 	ui.pushButton_Mode->setVisible(false);
+	ui.pushButton_lock->setVisible(false);
+	ui.pushButton_IO->setVisible(false);
 	nUserWidget->hide();
 #endif
 }
-void MultiInterface::ChangeVncState(int nTest)
-{
-	mVNC_window->ShowWidget(nTest);
-}
+
 void MultiInterface::slots_ModeState(StateEnum nState,QString nTemp)
 {
 	SendBasicNet(nState,nTemp);
@@ -288,21 +288,24 @@ void MultiInterface::slots_disConnected()
 */
 void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 {
-	Logfile->write(QString("TcpSever send  nState:%1").arg(nState),CheckLog);
-	QList<QTcpSocket *> m_tcps = m_temptcpServer->findChildren<QTcpSocket *>();
-	foreach (QTcpSocket *tcp, m_tcps)
+	//Logfile->write(QString("TcpSever send  nState:%1").arg(nState),CheckLog);
+	for (int i=0;i<3;i++)
 	{
-		MyStruct nData;
-		nData.nState = nState;
-		nData.nCount = sizeof(MyStruct);
-		if(nTemp != "NULL")
+		if(clientSocket[i] != NULL && IPAddress[i].nstate)
 		{
-			strcpy_s(nData.nTemp,nTemp.toLocal8Bit().data());
-		}else{
-			strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
+			MyStruct nData;
+			nData.nState = nState;
+			nData.nCount = sizeof(MyStruct);
+			if(nTemp != "NULL")
+			{
+				strcpy_s(nData.nTemp,nTemp.toLocal8Bit().data());
+			}else{
+				strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
+			}
+			int ret = clientSocket[i]->write((char*)&nData,sizeof(MyStruct));
+			if(ret == -1)
+				Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(clientSocket[i]->peerAddress().toString()),CheckLog);
 		}
-		int ret = tcp->write((char*)&nData,sizeof(MyStruct));
-		Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(tcp->peerAddress().toString()),CheckLog);
 	}
 	
 	/*
@@ -328,13 +331,11 @@ void MultiInterface::slots_clickAccont(int nTest)
 	switch (nTest)
 	{
 	case 0:
-		ChangeVncState(0);
 		nSheetPage = NLEADING;
 		Logfile->write(tr("into Front Interface"),OperationLog);
 		break;
 	case 1:
 #ifdef VNCTEST
-		ChangeVncState(1);
 		nSheetPage = NCLAMPING;
 #else
 		hide();
@@ -349,7 +350,6 @@ void MultiInterface::slots_clickAccont(int nTest)
 #endif
 		break;
 	case 2:
-		ChangeVncState(2);
 		nSheetPage = NBACKING;
 		Logfile->write(tr("into Backing Interface"),OperationLog);
 		break;
@@ -478,19 +478,10 @@ void MultiInterface::slots_CloseConnect()
 {
 	POINT tgcPosition;
 	GetCursorPos( &tgcPosition );
-	if((tgcPosition.x == gcPosition.x) && (tgcPosition.y == gcPosition.y))
+	if((tgcPosition.x == gcPosition.x) && (tgcPosition.y == gcPosition.y) && !isHidden())
 	{
-		//关闭远程界面
-		#ifdef VNCTEST
-		Logfile->write(QString("Auto disconnect!"),OperationLog);
-		mVNC_window->CloseWidget();
-		Sleep(2000);
-		nUserWidget->show();
-		#else//5分钟默认切换到前端界面
 		nUserWidget->nPermission = 3;
 		slots_clickAccont(1);
-		#endif
-		
 	}else{
 		gcPosition.x = tgcPosition.x;
 		gcPosition.y = tgcPosition.y;
@@ -564,8 +555,8 @@ void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 	else if(pType == ByTime && pTxt != "")
 		writeStream<<QString("%1").arg(pTxt)<<"\t";
 	writeStream<<tr("Time:%1:%2:%3").arg(time.hour()).arg(time.minute()).arg(time.second())<<"\t";
-	writeStream<<tr("All Count:  %1").arg(wData.iAllCount)<<"\t";
-	writeStream<<tr("Fail Count:  %1").arg(wData.GetFailCount())<<"\t";
+	writeStream<<tr("All Count:  %1").arg(nAllCheckNum/*wData.iAllCount*/)<<"\t";
+	writeStream<<tr("Fail Count:  %1").arg(nAllFailNum/*wData.GetFailCount()*/)<<"\t";
 	writeStream<<tr("Fail Rate:  %1%").arg(wData.GetFailRate()*100 ,2,'f',2)<<"\n";
 
 	writeStream<<tr("Front Count:  %1").arg(wData.GetFrontCount())<<"\t";
@@ -739,7 +730,7 @@ void MultiInterface::onServerDataReady()
 						IPAddress[2].nstate = true;
 						IPAddress[2].startTime = nTime.second();
 					}
-					Logfile->write(QString("IP:%1 CONNECT.").arg(m_tcpSocket->peerAddress().toString()),CheckLog);
+					//Logfile->write(QString("IP:%1 CONNECT.").arg(m_tcpSocket->peerAddress().toString()),CheckLog);
 				}	
 				//SendBasicNet(CONNECT,"NULL");
 				break;
@@ -756,7 +747,7 @@ void MultiInterface::onServerDataReady()
 				}
 				break;
 			case MAININTERFACE:
-				mVNC_window->CloseWidget();
+				//mVNC_window->CloseWidget();
 				nSheetPage = MAININTERFACE;
 				break;
 			case ONLYSHOWSEVER:
@@ -881,7 +872,7 @@ void MultiInterface::CalculateData(QByteArray buffer)
 			{
 				emit sianal_WarnMessage(nPlcTypeid,NULL);
 			}else{
-				Logfile->write(QString("into %1").arg(nPlcTypeid),CheckLog);
+				//Logfile->write(QString("into %1").arg(nPlcTypeid),CheckLog);
 				if(nPlcTypeid<32)//传统报警
 				{
 					emit sianal_WarnMessage(nPlcTypeid,m_PLCAlertType.at(nPlcTypeid));
@@ -925,25 +916,22 @@ void MultiInterface::ClearCount(bool isChangeShift)
 	}
 	if(isChangeShift)
 	{
-		nTmpcountData.Clear();
-		nRunInfo.Clear();
-		LastRunInfo.Clear();
 		SendBasicNet(CLEAR,"NULL");
 	}
 	else
 	{
-		//nTmpcountData = nRunInfo - LastRunInfo;
 		SaveCountInfo(ByTime,tr("CountClear"));
 		SaveCountInfo(ByShift,tr("CountClear"));
-		nTmpcountData.Clear();
-		nRunInfo.Clear();
-		LastRunInfo.Clear();
 		SendBasicNet(CLEAR,"Clear");
+		for(int i=0;i<3;i++)
+		{
+			nDataCount[i].clear();
+		}
 	}
-	/*for(int i=0;i<3;i++)
-	{
-	nDataCount[i].clear();
-	}*/
+	nTmpcountData.Clear();
+	nRunInfo.Clear();
+	LastRunInfo.Clear();
+	
 	nAllCheckNum = 0;
 	nAllFailNum = 0;
 	UpdateCountForShow();

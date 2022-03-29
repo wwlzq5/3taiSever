@@ -3,7 +3,6 @@
 #include <windows.h>
 #include "ui_multiinterface.h"
 #include <QCloseEvent>
-#include "widgetSever.h"
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QList>
@@ -66,7 +65,6 @@ public:
 	void SaveCountInfo(SaveReportType pType,QString pTxt="");
 	void SaveToDatebase();
 	void SendBasicNet(StateEnum,QString);
-	void ChangeVncState(int);
 
 public:
 	int nSheetPage;
@@ -109,7 +107,6 @@ public:
 	QSignalMapper* signal_mapper;
 	DataBase* m_Datebase;
 	QList<QByteArray> nDataList;
-	VNC_widget* mVNC_window;
 	IOCardClass* nIOCard[3];
 	CLogFile* Logfile;
 	QWidget * nIOprence;
