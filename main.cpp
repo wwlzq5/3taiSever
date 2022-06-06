@@ -81,13 +81,13 @@ int main(int argc, char *argv[])
 	
 	MultiInterface w;
 	w.showMaximized();
-	w.hide();
+	//w.hide();
 	return a.exec();
 }
 long  __stdcall CrashInfocallback( _EXCEPTION_POINTERS *pexcp)
 {
 	HANDLE hDumpFile = ::CreateFile(
-		L"MEMORY.DMP",
+		L"MEMORY1.DMP",
 		GENERIC_WRITE,
 		0,
 		NULL,

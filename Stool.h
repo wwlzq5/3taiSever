@@ -66,7 +66,8 @@ struct MyStruct
 {
 	StateEnum nState;//发送状态标志位
 	UnitEnum nUnit;//发送的设备标志位
-	int nCount;//包的长度
+	int nCount;//数据大小
+	int nCheckNum;//前端通过in0得到的过检总数
 	int nFail;//前端通过out3得到的踢废总数
 	char nTemp[256];//前端的多余变量
 };
