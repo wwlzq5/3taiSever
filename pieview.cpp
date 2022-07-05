@@ -43,13 +43,7 @@
 #ifndef M_PI
 #define M_PI 3.1415927
 #endif
-#ifdef VNCTEST
-#pragma unmanaged
 #include <QtGui>
-#pragma managed
-#endif
-#include <QtGui>
-
 #include "pieview.h"
 
 PieView::PieView(QWidget *parent)

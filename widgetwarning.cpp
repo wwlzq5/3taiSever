@@ -60,27 +60,6 @@ void Widget_Warning::slot_ShowMessage(int warningType, QString warningInfo)
 		return;
 	}
 	iWarningType = warningType;
-#ifdef VNCTEST
-	if(warningType == -1)
-	{
-		if(pMainFrm->nSheetPage == MAININTERFACE)
-		{
-			hide();
-		}else{
-			pMainFrm->SendBasicNet(SEVERS,"NULL");
-		}
-	}else{
-		labelWarningInfo->setText(warningInfo);
-		QDesktopWidget* desktopWidget = QApplication::desktop();
-		move(desktopWidget->width()-400,desktopWidget->height()-300);
-		if(pMainFrm->nSheetPage == MAININTERFACE)
-		{
-			show();
-		}else{
-			pMainFrm->SendBasicNet(SEVERS,warningInfo);
-		}
-	}
-#else
 	if(warningType == -1)
 	{
 		pMainFrm->SendBasicNet(SEVERS,"NULL");
@@ -93,7 +72,6 @@ void Widget_Warning::slot_ShowMessage(int warningType, QString warningInfo)
 			pMainFrm->SendBasicNet(SEVERS,warningInfo);
 		}
 	}
-#endif
 }
 void Widget_Warning::slots_HideWidget()
 {

@@ -13,7 +13,7 @@ MultiInterface::MultiInterface(QWidget *parent)
 	setWindowIcon(QIcon("./Resources/LOGO.png"));
 	setCentralWidget(ui.centralWidget);
 
-	ui.label_version->setText(QString::fromLocal8Bit("检测版本:1.64.1.8"));
+	//ui.label_version->setText(QString::fromLocal8Bit("检测版本:1.64.1"));
 
 	for (int i=0;i<3;i++)
 	{
@@ -229,21 +229,14 @@ void MultiInterface::InitConnect()
 	signal_mapper->setMapping(ui.pushButton_lock,8);
 	connect(signal_mapper, SIGNAL(mapped(int)), this, SLOT(slots_clickAccont(int)));
 
-#ifdef VNCTEST
-	ui.pushButton_open1->setVisible(true);
-	ui.pushButton_open2->setVisible(true);
-	ui.pushButton_open3->setVisible(true);
-	nUserWidget->show();
-#else
 	ui.pushButton_open1->setVisible(false);
 	//ui.pushButton_open2->setVisible(false);夹持要显示出来
 	ui.pushButton_open3->setVisible(false);
 	ui.pushButton_Alert->setVisible(false);
 	ui.pushButton_Mode->setVisible(false);
 	ui.pushButton_lock->setVisible(false);
-	ui.pushButton_IO->setVisible(false);
+	//ui.pushButton_IO->setVisible(false);
 	nUserWidget->hide();
-#endif
 }
 
 void MultiInterface::slots_ModeState(StateEnum nState,QString nTemp)
@@ -325,9 +318,6 @@ void MultiInterface::slots_clickAccont(int nTest)
 		Logfile->write(tr("into Front Interface"),OperationLog);
 		break;
 	case 1:
-#ifdef VNCTEST
-		nSheetPage = NCLAMPING;
-#else
 		hide();
 		if(nUserWidget->nPermission == 3)
 		{
@@ -337,7 +327,6 @@ void MultiInterface::slots_clickAccont(int nTest)
 		}
 		nSheetPage = NCLAMPING;
 		Logfile->write(QString("into Clamping Interface %1").arg(nUserWidget->nPermission),OperationLog);
-#endif
 		break;
 	case 2:
 		nSheetPage = NBACKING;
@@ -580,16 +569,25 @@ void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 	{
 		int pErrorByType = wData.GetErrorByTypeCount(i);
 		QString tempString=m_ErrorTypeInfo.iErrorType[i];
-		while(tempString.length()<8)
+		int tt = tempString.length();
+		while(tempString.length()<12)
 		{
 			tempString+=" ";
-			if(tempString.length() == 8)
+			if(tt <4)
 			{
-				writeStream<<tempString;
-				break;
+				if(tempString.length() == 12)
+				{
+					writeStream<<tempString<<"\t";
+					break;
+				}
+			}else{
+				if(tempString.length() == 8)
+				{
+					writeStream<<tempString<<"\t";
+					break;
+				}
 			}
 		}
-		writeStream<<"\t";
 		writeStream<<QString::number(pErrorByType)<<"\t";
 		writeStream<<QString::number(wData.iFrontErrorByType[i])<<"\t";
 		writeStream<<QString::number(wData.iClampErrorByType[i])<<"\t";

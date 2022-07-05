@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetMode.h'
 **
-** Created: Tue Mar 29 15:48:06 2022
+** Created: Tue Jul 5 09:34:30 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!

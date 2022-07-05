@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	
 	MultiInterface w;
 	w.showMaximized();
-	//w.hide();
+	w.hide();
 	return a.exec();
 }
 long  __stdcall CrashInfocallback( _EXCEPTION_POINTERS *pexcp)

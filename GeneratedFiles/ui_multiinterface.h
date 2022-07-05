@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'multiinterface.ui'
 **
-** Created: Mon Jun 6 10:13:05 2022
+** Created: Tue Jul 5 09:34:29 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -53,7 +53,6 @@ public:
     QCheckBox *checkBox_2;
     QLabel *label_3;
     QCheckBox *checkBox_3;
-    QLabel *label_version;
     QFrame *line;
     QStackedWidget *stackedWidget;
     QWidget *Page1;
@@ -213,12 +212,6 @@ public:
 
         verticalLayout->addLayout(gridLayout);
 
-        label_version = new QLabel(widget);
-        label_version->setObjectName(QString::fromUtf8("label_version"));
-        label_version->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        verticalLayout->addWidget(label_version);
-
 
         horizontalLayout_6->addWidget(widget);
 
@@ -263,7 +256,6 @@ public:
         checkBox_2->setText(QString());
         label_3->setText(QApplication::translate("MultiInterfaceClass", "Rear state", 0, QApplication::UnicodeUTF8));
         checkBox_3->setText(QString());
-        label_version->setText(QString());
     } // retranslateUi
 
 };
