@@ -835,6 +835,11 @@ DWORD WINAPI MultiInterface::DataHanldThread( void *arg )
 			pThis->nDataList.removeFirst();
 			pThis->CalculateData(buffer);
 		}
+		if(pThis->nDataList.count()>20)
+		{
+			pThis->nDataList.clear();
+			pThis->Logfile->write("clear data!",CheckLog);
+		}
 		Sleep(20);
 	}
 	return true;
