@@ -3,6 +3,12 @@
 
 MultiInterface *pMainFrm;
 #define CUSTOMALERT 3
+//#define JIAMI_INITIA
+#ifdef JIAMI_INITIA
+	#include "ProgramLicense.h"
+	CProgramLicense m_ProgramLicense;
+	#pragma comment(lib,"DHProgramLicense64.lib")
+#endif
 MultiInterface::MultiInterface(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -12,13 +18,6 @@ MultiInterface::MultiInterface(QWidget *parent)
 	pMainFrm = this;
 	setWindowIcon(QIcon("./Resources/LOGO.png"));
 	setCentralWidget(ui.centralWidget);
-
-	//ui.label_version->setText(QString::fromLocal8Bit("检测版本:1.64.1"));
-
-	for (int i=0;i<3;i++)
-	{
-		clientSocket[i]=NULL;
-	}
 	InitConfig();
 	InitSocket();
 	InitConnect();
@@ -117,6 +116,7 @@ void MultiInterface::InitConfig()
 		strSession = QString("/CutomAlert/%1").arg(i);
 		m_CustomAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
 	}
+	nErrorCount = m_PLCAlertType.count() + m_CustomAlertType.count();
 	Logfile = new CLogFile();
 	Logfile->write("start check!",OperationLog);
 	nOver  = true;
@@ -285,29 +285,27 @@ void MultiInterface::slots_disConnected()
 */
 void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 {
-	//Logfile->write(QString("TcpSever send  nState:%1").arg(nState),CheckLog);
-	for (int i=0;i<3;i++)
+	SockectMutex.lock();
+	for (int i=0;i<clientSocket.count();i++)
 	{
-		if(clientSocket[i] != NULL && IPAddress[i].nstate)
+		MyStruct nData;
+		nData.nState = nState;
+		nData.nCount = sizeof(MyStruct);
+		nData.nCheckNum = nAllCheckNum;
+		nData.nFail = nAllFailNum;
+		if(nTemp != "NULL")
 		{
-			MyStruct nData;
-			nData.nState = nState;
-			nData.nCount = sizeof(MyStruct);
-			nData.nCheckNum = nAllCheckNum;
-			nData.nFail = nAllFailNum;
-			if(nTemp != "NULL")
-			{
-				strcpy_s(nData.nTemp,nTemp.toLocal8Bit().data());
-			}else{
-				strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
-			}
-			int ret = clientSocket[i]->write((char*)&nData,sizeof(MyStruct));
-			if(ret == -1)
-			{
-				Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(clientSocket[i]->peerAddress().toString()),CheckLog);
-			}
+			strcpy_s(nData.nTemp,nTemp.toLocal8Bit().data());
+		}else{
+			strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
+		}
+		int ret = clientSocket[i]->write((char*)&nData,sizeof(MyStruct));
+		if(ret == -1)
+		{
+			Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(clientSocket[i]->peerAddress().toString()),CheckLog);
 		}
 	}
+	SockectMutex.unlock();
 }
 void MultiInterface::slots_clickAccont(int nTest)
 {
@@ -427,6 +425,7 @@ void MultiInterface::slots_SaveCountByShift()
 			//qDebug()<<"Shift3";
 			SaveCountInfo(ByShift,tr("Shift3"));
 			ClearCount();
+			CheckLicense();
 			currentShift = 2;
 		}
 	}
@@ -478,22 +477,7 @@ void MultiInterface::slots_CloseConnect()
 }
 void MultiInterface::slots_ConnectState()
 {
-	for(int i=0;i<3;i++)
-	{
-		if(IPAddress[i].nstate)
-		{
-			int timeLength = QTime::currentTime().second();
-			if((timeLength-IPAddress[i].startTime+60)%60 > 25)
-			{
-				onServerConnected(IPAddress[i].ipAddress,false);
-				IPAddress[i].nstate = false;
-				Logfile->write(QString("Overtime:%3 , IP:%1 , lastTime:%2 ").arg(IPAddress[i].ipAddress).arg(IPAddress[i].startTime).arg((timeLength-IPAddress[i].startTime+60)%60),CheckLog);
-			}else{
-				onServerConnected(IPAddress[i].ipAddress,true);
-			}
-		}
-		SendBasicNet(FRONTSTATE,"NULL");
-	}
+	SendBasicNet(FRONTSTATE,"NULL");
 }
 void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 {
@@ -634,48 +618,47 @@ void MultiInterface::ServerNewConnection()
 {
 	QTcpSocket* tcp = m_temptcpServer->nextPendingConnection(); //获取新的客户端信息
 	Logfile->write(QString("connected IP:%1").arg(tcp->peerAddress().toString()),CheckLog);
-	if(tcp->peerAddress().toString() == IP1)
-		clientSocket[0] = tcp ;
-	else if(tcp->peerAddress().toString() == IP2)
-		clientSocket[1] = tcp ;
-	else if(tcp->peerAddress().toString() == IP3)
-		clientSocket[2] = tcp ;
+	SockectMutex.lock();
+	clientSocket.push_back(tcp);
+	SockectMutex.unlock();
 	onServerConnected(tcp->peerAddress().toString(),true);
 	connect(tcp, SIGNAL(readyRead()), this, SLOT(onServerDataReady()));
+	connect(tcp, SIGNAL(stateChanged(QAbstractSocket::SocketState )), this, SLOT(slot_StateChanged( QAbstractSocket::SocketState )));
 }
 
 void MultiInterface::slot_StateChanged(QAbstractSocket::SocketState state)
 {
+	QTcpSocket* tcp = static_cast<QTcpSocket*>(sender());
 	switch(state)
 	{
 	case QAbstractSocket::ConnectedState:
 		Logfile->write("ConnectedState",CheckLog);
 		break;
-	case QAbstractSocket::ConnectingState:
-		Logfile->write("ConnectingState",CheckLog);
-		break;
-	case QAbstractSocket::ClosingState:
-		Logfile->write("ClosingState",CheckLog);
-		break;
-	case QAbstractSocket::UnconnectedState:
-		Logfile->write("UnconnectedState",CheckLog);
-		break;
 	default:
+		if(tcp->peerAddress().toString() == IP1)
+		{
+			ui.checkBox->setChecked(false);
+		}
+		else if(tcp->peerAddress().toString() == IP2)
+		{
+			ui.checkBox_2->setChecked(false);
+		}
+		else if(tcp->peerAddress().toString() == IP3)
+		{
+			ui.checkBox_3->setChecked(false);
+		}
 		break;
 	}
-	QTcpSocket* tcp = static_cast<QTcpSocket*>(sender());
-	if(tcp->peerAddress().toString() == IP1)
+	SockectMutex.lock();
+	for(int i=0;i<clientSocket.size();i++)
 	{
-		ui.checkBox->setChecked(false);
+		if(!clientSocket[i]->isValid())
+		{
+			clientSocket.removeAt(i);
+			i--;
+		}
 	}
-	else if(tcp->peerAddress().toString() == IP2)
-	{
-		ui.checkBox_2->setChecked(false);
-	}
-	else if(tcp->peerAddress().toString() == IP3)
-	{
-		ui.checkBox_3->setChecked(false);
-	}
+	SockectMutex.unlock();
 }
 void MultiInterface::onServerDataReady()
 {
@@ -859,17 +842,20 @@ void MultiInterface::CalculateData(QByteArray buffer)
 			nAllCheckNum = nSaveDataAddress[21];
 			nAllFailNum = nSaveDataAddress[22];
 			emit sianal_updateCountInfo(nAllCheckNum,nAllFailNum,0);
-			if(nPlcTypeid == -1)
+			if(nPlcTypeid >= -1 && nPlcTypeid < nErrorCount)
 			{
-				emit sianal_WarnMessage(nPlcTypeid,NULL);
-			}else{
-				if(nPlcTypeid<32)//传统报警
+				if(nPlcTypeid == -1)
 				{
-					emit sianal_WarnMessage(nPlcTypeid,m_PLCAlertType.at(nPlcTypeid));
-				}else{//自定义报警
-					int temp = nPlcTypeid - 32;
-					if(temp < StatusTypeNumber && temp > 0)
-					emit sianal_WarnMessage(nPlcTypeid,m_CustomAlertType.at(temp));
+					emit sianal_WarnMessage(nPlcTypeid,NULL);
+				}else{
+					if(nPlcTypeid<32)//传统报警
+					{
+						emit sianal_WarnMessage(nPlcTypeid,m_PLCAlertType.at(nPlcTypeid));
+					}else{//自定义报警
+						int temp = nPlcTypeid - 32;
+						if(temp < StatusTypeNumber && temp > 0)
+							emit sianal_WarnMessage(nPlcTypeid,m_CustomAlertType.at(temp));
+					}
 				}
 			}
 		}
@@ -937,3 +923,46 @@ void MultiInterface::UpdateCountForShow(bool isFirst)
 		m_Datebase->insertLastData(nAllCheckNum,nAllFailNum,nRunInfo);
 	}
 }
+#ifdef JIAMI_INITIA
+bool MultiInterface::CheckLicense()
+{
+	QString  g_UidChar = "06a6914a-d863-43e1-800e-7e2eece22fd7";
+	ver_code uucode;
+	m_ProgramLicense.GetVerCode(&uucode);
+	QString strCode = QString("%1-%2-%3-%4%5-%6%7%8%9%10%11")
+		.arg(uucode.Data1,8,16,QChar('0')).arg(uucode.Data2,4,16,QChar('0')).arg(uucode.Data3,4,16,QChar('0'))
+		.arg((int)uucode.Data4[0],2,16,QChar('0')).arg((int)uucode.Data4[1],2,16,QChar('0'))
+		.arg((int)uucode.Data4[2],2,16,QChar('0')).arg((int)uucode.Data4[3],2,16,QChar('0'))
+		.arg((int)uucode.Data4[4],2,16,QChar('0')).arg((int)uucode.Data4[5],2,16,QChar('0'))
+		.arg((int)uucode.Data4[6],2,16,QChar('0')).arg((int)uucode.Data4[7],2,16,QChar('0'));
+	if (g_UidChar == strCode)
+	{
+		//验证License
+		s_KeyVerfResult res = m_ProgramLicense.CheckLicenseValid(true);
+		if (res.nError <= 0)//未超时
+		{
+			surplusDays = m_ProgramLicense.ReadHardwareID("getexpdate");
+			ui.label_version->setText(QString::fromLocal8Bit("设备剩余使用时间:%1天").arg(surplusDays));
+			//传递窗口句柄
+			m_ProgramLicense.SetMainWnd((HWND)this->winId());
+			return true; 
+		}
+		else
+		{
+			QMessageBox::information(this,tr("Error"),tr("License expired or dongle abnormal! Error code: %1").arg(res.nError)); //License过期或加密狗异常！错误代码：%1
+			exit(0);
+		}
+	}
+	else
+	{
+		QMessageBox::information(this,tr("Error"),tr("Encryption authentication failed!")); //加密验证失败
+		exit(0);
+	}
+	return true;
+}
+#else
+bool MultiInterface::CheckLicense()
+{
+	return TRUE;
+}
+#endif // JIAMI_INITIA

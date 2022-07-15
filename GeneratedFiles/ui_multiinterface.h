@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'multiinterface.ui'
 **
-** Created: Tue Jul 5 09:34:29 2022
+** Created: Fri Jul 15 15:00:09 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -48,11 +48,12 @@ public:
     QSpacerItem *verticalSpacer;
     QGridLayout *gridLayout;
     QLabel *label;
-    QCheckBox *checkBox;
     QLabel *label_2;
     QCheckBox *checkBox_2;
-    QLabel *label_3;
+    QCheckBox *checkBox;
     QCheckBox *checkBox_3;
+    QLabel *label_3;
+    QLabel *label_version;
     QFrame *line;
     QStackedWidget *stackedWidget;
     QWidget *Page1;
@@ -184,11 +185,6 @@ public:
 
         gridLayout->addWidget(label, 0, 0, 1, 1);
 
-        checkBox = new QCheckBox(widget);
-        checkBox->setObjectName(QString::fromUtf8("checkBox"));
-
-        gridLayout->addWidget(checkBox, 0, 1, 1, 1);
-
         label_2 = new QLabel(widget);
         label_2->setObjectName(QString::fromUtf8("label_2"));
 
@@ -199,18 +195,29 @@ public:
 
         gridLayout->addWidget(checkBox_2, 1, 1, 1, 1);
 
-        label_3 = new QLabel(widget);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
+        checkBox = new QCheckBox(widget);
+        checkBox->setObjectName(QString::fromUtf8("checkBox"));
 
-        gridLayout->addWidget(label_3, 2, 0, 1, 1);
+        gridLayout->addWidget(checkBox, 0, 1, 1, 1);
 
         checkBox_3 = new QCheckBox(widget);
         checkBox_3->setObjectName(QString::fromUtf8("checkBox_3"));
 
         gridLayout->addWidget(checkBox_3, 2, 1, 1, 1);
 
+        label_3 = new QLabel(widget);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+
+        gridLayout->addWidget(label_3, 2, 0, 1, 1);
+
 
         verticalLayout->addLayout(gridLayout);
+
+        label_version = new QLabel(widget);
+        label_version->setObjectName(QString::fromUtf8("label_version"));
+        label_version->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        verticalLayout->addWidget(label_version);
 
 
         horizontalLayout_6->addWidget(widget);
@@ -251,11 +258,12 @@ public:
         pushButton_Mode->setText(QApplication::translate("MultiInterfaceClass", "Product Mode", 0, QApplication::UnicodeUTF8));
         pushButton_lock->setText(QApplication::translate("MultiInterfaceClass", "System Lock", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("MultiInterfaceClass", "Front state", 0, QApplication::UnicodeUTF8));
-        checkBox->setText(QString());
         label_2->setText(QApplication::translate("MultiInterfaceClass", "Clamp state", 0, QApplication::UnicodeUTF8));
         checkBox_2->setText(QString());
-        label_3->setText(QApplication::translate("MultiInterfaceClass", "Rear state", 0, QApplication::UnicodeUTF8));
+        checkBox->setText(QString());
         checkBox_3->setText(QString());
+        label_3->setText(QApplication::translate("MultiInterfaceClass", "Rear state", 0, QApplication::UnicodeUTF8));
+        label_version->setText(QString());
     } // retranslateUi
 
 };

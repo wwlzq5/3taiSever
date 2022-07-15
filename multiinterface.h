@@ -65,7 +65,7 @@ public:
 	void SaveCountInfo(SaveReportType pType,QString pTxt="");
 	void SaveToDatebase();
 	void SendBasicNet(StateEnum,QString);
-
+	bool CheckLicense();
 public:
 	int nSheetPage;
 	bool nOver;
@@ -120,6 +120,7 @@ public:
 	cErrorInfo nRunInfo,LastRunInfo,nTmpcountData;
 	SystemConfigInfo SysConfigInfo;
 public:
+	int surplusDays;
 	int StatusTypeNumber;
 	int nAllCheckNum;
 	int nAllFailNum;
@@ -129,8 +130,9 @@ public:
 	int currentShift;
 	POINT gcPosition;
 	QByteArray m_buffer;
-	QTcpSocket *clientSocket[3];
-
+	QMutex SockectMutex;
+	QList<QTcpSocket*> clientSocket;
+	int nErrorCount;
 private:
 	Ui::MultiInterfaceClass ui;
 };

@@ -260,52 +260,52 @@ Front: %5   Clamp: %6   Rear: %7</source>
 <context>
     <name>MultiInterface</name>
     <message>
-        <location filename="multiinterface.cpp" line="72"/>
+        <location filename="multiinterface.cpp" line="81"/>
         <source>Good</source>
         <translation>正常</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="163"/>
+        <location filename="multiinterface.cpp" line="174"/>
         <source>IOData</source>
         <translation>接口卡数据</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="279"/>
+        <location filename="multiinterface.cpp" line="283"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="335"/>
+        <location filename="multiinterface.cpp" line="325"/>
         <source>into Front Interface</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="354"/>
+        <location filename="multiinterface.cpp" line="340"/>
         <source>into Backing Interface</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="358"/>
+        <location filename="multiinterface.cpp" line="344"/>
         <source>into IOCard Interface</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="362"/>
+        <location filename="multiinterface.cpp" line="348"/>
         <source>into Alert Interface</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="366"/>
+        <location filename="multiinterface.cpp" line="352"/>
         <source>into Clear Interface</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="370"/>
+        <location filename="multiinterface.cpp" line="356"/>
         <source>into Mode Interface</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="374"/>
+        <location filename="multiinterface.cpp" line="360"/>
         <source>into Count Interface</source>
         <translation></translation>
     </message>
@@ -318,7 +318,7 @@ Front: %5   Clamp: %6   Rear: %7</source>
         <translation type="obsolete">确认重连吗？</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="379"/>
+        <location filename="multiinterface.cpp" line="365"/>
         <source>into lock Interface</source>
         <translation></translation>
     </message>
@@ -327,107 +327,123 @@ Front: %5   Clamp: %6   Rear: %7</source>
         <translation type="obsolete">时间: %1:%2:%3</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="429"/>
+        <location filename="multiinterface.cpp" line="415"/>
         <source>Shift1</source>
         <translation>班次1</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="439"/>
+        <location filename="multiinterface.cpp" line="425"/>
         <source>Shift2</source>
         <translation>班次2</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="449"/>
+        <location filename="multiinterface.cpp" line="435"/>
         <source>Shift3</source>
         <translation>班次3</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="554"/>
+        <location filename="multiinterface.cpp" line="551"/>
         <source>Shift:%1</source>
         <oldsource>Shift:	%1</oldsource>
         <translation>班次:%1</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="557"/>
+        <location filename="multiinterface.cpp" line="554"/>
         <source>Time:%1:%2:%3</source>
         <oldsource>Time:	%1:%2:%3</oldsource>
         <translation>时间:%1:%2:%3</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="558"/>
+        <location filename="multiinterface.cpp" line="555"/>
         <source>All Count:  %1</source>
         <translation>过检总数:  %1</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="559"/>
+        <location filename="multiinterface.cpp" line="556"/>
         <source>Fail Count:  %1</source>
         <translation>踢废数:  %1</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="560"/>
+        <location filename="multiinterface.cpp" line="557"/>
         <source>Fail Rate:  %1%</source>
         <translation>踢废率:  %1%</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="562"/>
+        <location filename="multiinterface.cpp" line="559"/>
         <source>Front Count:  %1</source>
         <translation>前壁:  %1</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="563"/>
+        <location filename="multiinterface.cpp" line="560"/>
         <source>Clamp Count:  %1</source>
         <translation>夹持:  %1</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="564"/>
+        <location filename="multiinterface.cpp" line="561"/>
         <source>Rear Count:  %1</source>
         <translation>后壁:  %1</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="571"/>
+        <location filename="multiinterface.cpp" line="568"/>
         <source>Results</source>
         <translation>统计</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="573"/>
+        <location filename="multiinterface.cpp" line="570"/>
         <source>front</source>
         <translation>前壁</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="574"/>
+        <location filename="multiinterface.cpp" line="571"/>
         <source>clamp</source>
         <translation>夹持</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="575"/>
+        <location filename="multiinterface.cpp" line="572"/>
         <source>rear</source>
         <translation>后壁</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="910"/>
+        <location filename="multiinterface.cpp" line="911"/>
         <source>clear</source>
         <translation>计数清零</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="911"/>
+        <location filename="multiinterface.cpp" line="912"/>
         <source>Are you sure to clear?</source>
         <translation>是否清除计数？</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="911"/>
+        <location filename="multiinterface.cpp" line="912"/>
         <source>For Report statistical accuracy.</source>
         <translation>为了统计报表的准确性。</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="911"/>
+        <location filename="multiinterface.cpp" line="912"/>
         <source>Please make sure there are no bottles in the cabinet</source>
         <translation>请确认清零时没有瓶子在机柜里</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="923"/>
         <location filename="multiinterface.cpp" line="924"/>
+        <location filename="multiinterface.cpp" line="925"/>
         <source>CountClear</source>
         <translation>计数清零</translation>
+    </message>
+    <message>
+        <location filename="multiinterface.cpp" line="976"/>
+        <location filename="multiinterface.cpp" line="982"/>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <location filename="multiinterface.cpp" line="976"/>
+        <source>License expired or dongle abnormal! Error code: %1</source>
+        <translation type="unfinished">License过期或加密狗异常！错误代码：%1</translation>
+    </message>
+    <message>
+        <location filename="multiinterface.cpp" line="982"/>
+        <source>Encryption authentication failed!</source>
+        <translation type="unfinished">加密验证失败！</translation>
     </message>
     <message>
         <source>Product Number:  %1</source>
@@ -446,7 +462,7 @@ Front: %5   Clamp: %6   Rear: %7</source>
         <translation type="obsolete">错误类型</translation>
     </message>
     <message>
-        <location filename="multiinterface.cpp" line="572"/>
+        <location filename="multiinterface.cpp" line="569"/>
         <source>Count</source>
         <translation>计数</translation>
     </message>

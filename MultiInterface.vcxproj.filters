@@ -254,4 +254,9 @@
   <ItemGroup>
     <ResourceCompile Include="MultiInterface.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ProgramLicense.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

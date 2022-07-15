@@ -11,7 +11,7 @@ widget_Mode::widget_Mode()
 }
 widget_Mode::~widget_Mode()
 {
-	close();
+	//close();
 }
 void widget_Mode::initSocket()
 {

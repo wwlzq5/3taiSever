@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
 	a.installTranslator(translator);
 	
 	MultiInterface w;
+	w.CheckLicense();
 	w.showMaximized();
 	w.hide();
 	return a.exec();
