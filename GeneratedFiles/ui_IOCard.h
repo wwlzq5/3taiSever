@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'IOCard.ui'
 **
-** Created: Fri Jul 15 15:00:09 2022
+** Created: Tue Jul 19 09:10:44 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -20,7 +20,6 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
-#include <QtGui/QPushButton>
 #include <QtGui/QSpacerItem>
 #include <QtGui/QTableView>
 #include <QtGui/QWidget>
@@ -62,7 +61,6 @@ public:
     QHBoxLayout *horizontalLayout;
     QLabel *label_17;
     QCheckBox *checkBox;
-    QPushButton *pushButton;
     QSpacerItem *horizontalSpacer;
     QWidget *layoutWidget2;
     QHBoxLayout *horizontalLayout_17;
@@ -97,7 +95,7 @@ public:
         tableView->setMinimumSize(QSize(160, 0));
         layoutWidget = new QWidget(IOCard);
         layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
-        layoutWidget->setGeometry(QRect(10, 10, 464, 74));
+        layoutWidget->setGeometry(QRect(10, 10, 511, 76));
         gridLayout = new QGridLayout(layoutWidget);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         gridLayout->setContentsMargins(0, 0, 0, 0);
@@ -286,7 +284,7 @@ public:
 
         layoutWidget1 = new QWidget(IOCard);
         layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(10, 140, 461, 25));
+        layoutWidget1->setGeometry(QRect(10, 140, 461, 30));
         horizontalLayout_2 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_2->setSpacing(20);
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
@@ -306,18 +304,13 @@ public:
 
         horizontalLayout_2->addLayout(horizontalLayout);
 
-        pushButton = new QPushButton(layoutWidget1);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-
-        horizontalLayout_2->addWidget(pushButton);
-
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_2->addItem(horizontalSpacer);
 
         layoutWidget2 = new QWidget(IOCard);
         layoutWidget2->setObjectName(QString::fromUtf8("layoutWidget2"));
-        layoutWidget2->setGeometry(QRect(10, 170, 461, 113));
+        layoutWidget2->setGeometry(QRect(10, 170, 461, 139));
         horizontalLayout_17 = new QHBoxLayout(layoutWidget2);
         horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
         horizontalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -364,7 +357,7 @@ public:
         horizontalLayout_17->setStretch(1, 7);
         layoutWidget3 = new QWidget(IOCard);
         layoutWidget3->setObjectName(QString::fromUtf8("layoutWidget3"));
-        layoutWidget3->setGeometry(QRect(10, 90, 461, 48));
+        layoutWidget3->setGeometry(QRect(10, 90, 461, 49));
         gridLayout_2 = new QGridLayout(layoutWidget3);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         gridLayout_2->setContentsMargins(0, 0, 0, 0);
@@ -451,7 +444,6 @@ public:
         label_12->setText(QApplication::translate("IOCard", "OUT7:", 0, QApplication::UnicodeUTF8));
         label_17->setText(QApplication::translate("IOCard", "IfShowError", 0, QApplication::UnicodeUTF8));
         checkBox->setText(QString());
-        pushButton->setText(QApplication::translate("IOCard", "clear table", 0, QApplication::UnicodeUTF8));
         label_Camera->setText(QString());
         label_nFailType->setText(QString());
         label_13->setText(QApplication::translate("IOCard", "nALL:", 0, QApplication::UnicodeUTF8));

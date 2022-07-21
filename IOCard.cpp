@@ -9,7 +9,6 @@ void IOCardClass::initInterfance()
 {
 	ifSHOW = true;
 	connect(ui.checkBox,SIGNAL(clicked()),this,SLOT(slot_checkBoxCheck()));
-	connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(slot_ClearTable()));
 	m_model = new QStandardItemModel();
 	m_model->setColumnCount(3);
 	m_model->setHeaderData(0,Qt::Horizontal,tr("time"));
@@ -104,18 +103,4 @@ void IOCardClass::InsertTableList(int id,QString nName)
 			item.clear();
 		}
 	}
-}
-void IOCardClass::slot_ClearTable()
-{
-	while(0 < m_model->rowCount())
-	{
-		QList<QStandardItem*>  item = m_model->takeRow(m_model->rowCount()-1);
-		if (!item.isEmpty())
-		{
-			qDeleteAll(item);
-			item.clear();
-		}
-	}
-	int clear[24]={0};
-	setEditValue(clear,NULL);
 }

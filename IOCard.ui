@@ -46,8 +46,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>464</width>
-     <height>74</height>
+     <width>511</width>
+     <height>76</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
@@ -407,7 +407,7 @@
      <x>10</x>
      <y>140</y>
      <width>461</width>
-     <height>25</height>
+     <height>30</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -436,13 +436,6 @@
      </layout>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>clear table</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <spacer name="horizontalSpacer">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -463,7 +456,7 @@
      <x>10</x>
      <y>170</y>
      <width>461</width>
-     <height>113</height>
+     <height>139</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_17" stretch="3,7">
@@ -566,7 +559,7 @@
      <x>10</x>
      <y>90</y>
      <width>461</width>
-     <height>48</height>
+     <height>49</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0,0">

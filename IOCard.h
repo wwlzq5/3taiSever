@@ -16,7 +16,6 @@ public:
 	void InsertTableList(int,QString);
 	
 public slots:
-	void slot_ClearTable();
 	void slot_checkBoxCheck();
 public:
 	QStandardItemModel *m_model; 

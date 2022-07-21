@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'IOCard.h'
 **
-** Created: Fri Jul 15 15:00:09 2022
+** Created: Tue Jul 19 09:10:44 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_IOCardClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       1,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -32,14 +32,12 @@ static const uint qt_meta_data_IOCardClass[] = {
 
  // slots: signature, parameters, type, tag, flags
       13,   12,   12,   12, 0x0a,
-      31,   12,   12,   12, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_IOCardClass[] = {
-    "IOCardClass\0\0slot_ClearTable()\0"
-    "slot_checkBoxCheck()\0"
+    "IOCardClass\0\0slot_checkBoxCheck()\0"
 };
 
 void IOCardClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -48,8 +46,7 @@ void IOCardClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         Q_ASSERT(staticMetaObject.cast(_o));
         IOCardClass *_t = static_cast<IOCardClass *>(_o);
         switch (_id) {
-        case 0: _t->slot_ClearTable(); break;
-        case 1: _t->slot_checkBoxCheck(); break;
+        case 0: _t->slot_checkBoxCheck(); break;
         default: ;
         }
     }
@@ -88,9 +85,9 @@ int IOCardClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 1)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 1;
     }
     return _id;
 }

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'widget_count.ui'
 **
-** Created: Fri Jul 15 15:00:09 2022
+** Created: Tue Jul 19 09:10:44 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
