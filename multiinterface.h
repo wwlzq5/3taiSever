@@ -34,6 +34,7 @@ struct SystemConfigInfo
 	QTime shift2Time;
 	QTime shift3Time;
 	bool isAutoClear;
+	int isOldPLC;
 };
 
 struct Paths
@@ -44,6 +45,7 @@ struct Paths
 	QString errorTypePath;
 	QString modelTypePath;
 	QString LastdataPath;
+	QString PLColdAlert;
 };
 
 class MultiInterface : public QMainWindow
@@ -66,6 +68,7 @@ public:
 	void SaveToDatebase();
 	void SendBasicNet(StateEnum,QString);
 	bool CheckLicense();
+	void deleteCountInfoConfig();
 public:
 	int nSheetPage;
 	bool nOver;

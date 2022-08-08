@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'IOCard.ui'
 **
-** Created: Tue Jul 19 09:10:44 2022
+** Created: Thu Aug 4 10:04:44 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -81,7 +81,7 @@ public:
     {
         if (IOCard->objectName().isEmpty())
             IOCard->setObjectName(QString::fromUtf8("IOCard"));
-        IOCard->resize(648, 299);
+        IOCard->resize(752, 313);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -89,7 +89,7 @@ public:
         IOCard->setSizePolicy(sizePolicy);
         tableView = new QTableView(IOCard);
         tableView->setObjectName(QString::fromUtf8("tableView"));
-        tableView->setGeometry(QRect(480, 10, 160, 278));
+        tableView->setGeometry(QRect(530, 10, 221, 301));
         sizePolicy.setHeightForWidth(tableView->sizePolicy().hasHeightForWidth());
         tableView->setSizePolicy(sizePolicy);
         tableView->setMinimumSize(QSize(160, 0));
@@ -284,7 +284,7 @@ public:
 
         layoutWidget1 = new QWidget(IOCard);
         layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(10, 140, 461, 30));
+        layoutWidget1->setGeometry(QRect(10, 140, 511, 30));
         horizontalLayout_2 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_2->setSpacing(20);
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
@@ -310,7 +310,7 @@ public:
 
         layoutWidget2 = new QWidget(IOCard);
         layoutWidget2->setObjectName(QString::fromUtf8("layoutWidget2"));
-        layoutWidget2->setGeometry(QRect(10, 170, 461, 139));
+        layoutWidget2->setGeometry(QRect(10, 170, 511, 139));
         horizontalLayout_17 = new QHBoxLayout(layoutWidget2);
         horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
         horizontalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -357,7 +357,7 @@ public:
         horizontalLayout_17->setStretch(1, 7);
         layoutWidget3 = new QWidget(IOCard);
         layoutWidget3->setObjectName(QString::fromUtf8("layoutWidget3"));
-        layoutWidget3->setGeometry(QRect(10, 90, 461, 49));
+        layoutWidget3->setGeometry(QRect(10, 90, 511, 49));
         gridLayout_2 = new QGridLayout(layoutWidget3);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         gridLayout_2->setContentsMargins(0, 0, 0, 0);

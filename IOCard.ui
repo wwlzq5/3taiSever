@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>648</width>
-    <height>299</height>
+    <width>752</width>
+    <height>313</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,10 +22,10 @@
   <widget class="QTableView" name="tableView">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>530</x>
      <y>10</y>
-     <width>160</width>
-     <height>278</height>
+     <width>221</width>
+     <height>301</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -406,7 +406,7 @@
     <rect>
      <x>10</x>
      <y>140</y>
-     <width>461</width>
+     <width>511</width>
      <height>30</height>
     </rect>
    </property>
@@ -455,7 +455,7 @@
     <rect>
      <x>10</x>
      <y>170</y>
-     <width>461</width>
+     <width>511</width>
      <height>139</height>
     </rect>
    </property>
@@ -558,7 +558,7 @@
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>461</width>
+     <width>511</width>
      <height>49</height>
     </rect>
    </property>

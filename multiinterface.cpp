@@ -13,7 +13,6 @@ MultiInterface::MultiInterface(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-
 	setWindowFlags (Qt::FramelessWindowHint);
 	pMainFrm = this;
 	setWindowIcon(QIcon("./Resources/LOGO.png"));
@@ -62,6 +61,25 @@ void MultiInterface::InitConfig()
 	AppPaths.PLCAlertPath = AppPaths.AppPath + "../Config/PLCAlertType.ini";
 	AppPaths.errorTypePath = AppPaths.AppPath + "../Config/ErrorType.ini";
 	AppPaths.modelTypePath = AppPaths.AppPath + "Config/ModeType.ini";
+	AppPaths.PLColdAlert = AppPaths.AppPath + "Config/PLCStatusType.ini";
+	//读取config配置文件
+	QSettings SystemConfigSet(AppPaths.configPath,QSettings::IniFormat);
+	SystemConfigSet.setIniCodec(QTextCodec::codecForName("GBK"));
+	SysConfigInfo.iSaveRecordInterval=SystemConfigSet.value("System/iSaveRecordInterval",30).toInt();
+	SysConfigInfo.isSaveRecord = SystemConfigSet.value("System/isSaveRecord",true).toBool();
+	SysConfigInfo.shift1Time = QTime::fromString(SystemConfigSet.value("System/shift1Time","060000").toString(),"hhmmss");
+	SysConfigInfo.shift2Time = QTime::fromString(SystemConfigSet.value("System/shift2Time","150000").toString(),"hhmmss");
+	SysConfigInfo.shift3Time = QTime::fromString(SystemConfigSet.value("System/shift3Time","230000").toString(),"hhmmss");
+	SysConfigInfo.isAutoClear = SystemConfigSet.value("System/isAutoClear",true).toBool();
+	SysConfigInfo.isOldPLC = SystemConfigSet.value("System/IsOLdPLC",false).toBool();
+
+	QTime currentTm=QTime::currentTime();
+	if(currentTm >= SysConfigInfo.shift1Time &&  currentTm < SysConfigInfo.shift2Time)
+		currentShift = 0;
+	else if(currentTm >= SysConfigInfo.shift2Time &&  currentTm < SysConfigInfo.shift3Time)
+		currentShift = 1;
+	else if(currentTm <SysConfigInfo.shift1Time || currentTm >= SysConfigInfo.shift3Time)
+		currentShift = 2;
 
 	QSettings erroriniset(AppPaths.errorTypePath,QSettings::IniFormat);
 	erroriniset.setIniCodec(QTextCodec::codecForName("GBK"));
@@ -78,45 +96,40 @@ void MultiInterface::InitConfig()
 			QString strSession = QString("/ErrorType/%1").arg(i);
 			QString errorstr=erroriniset.value(strSession,"").toString();
 			m_ErrorTypeInfo.iErrorType.append(QString::fromLocal8Bit(errorstr));
-			//qDebug()<<QString::fromLocal8Bit(errorstr)<<":"<<errorstr.length();
 		}
 	}
-
-	QSettings SystemConfigSet(AppPaths.configPath,QSettings::IniFormat);
-	SystemConfigSet.setIniCodec(QTextCodec::codecForName("GBK"));
-	SysConfigInfo.iSaveRecordInterval=SystemConfigSet.value("System/iSaveRecordInterval",30).toInt();
-	SysConfigInfo.isSaveRecord = SystemConfigSet.value("System/isSaveRecord",true).toBool();
-	SysConfigInfo.shift1Time = QTime::fromString(SystemConfigSet.value("System/shift1Time","060000").toString(),"hhmmss");
-	SysConfigInfo.shift2Time = QTime::fromString(SystemConfigSet.value("System/shift2Time","150000").toString(),"hhmmss");
-	SysConfigInfo.shift3Time = QTime::fromString(SystemConfigSet.value("System/shift3Time","230000").toString(),"hhmmss");
-	SysConfigInfo.isAutoClear = SystemConfigSet.value("System/isAutoClear",true).toBool();
-
-	QTime currentTm=QTime::currentTime();
-	if(currentTm >= SysConfigInfo.shift1Time &&  currentTm < SysConfigInfo.shift2Time)
-		currentShift = 0;
-	else if(currentTm >= SysConfigInfo.shift2Time &&  currentTm < SysConfigInfo.shift3Time)
-		currentShift = 1;
-	else if(currentTm <SysConfigInfo.shift1Time || currentTm >= SysConfigInfo.shift3Time)
-		currentShift = 2;
 	
-	//获取PLC的报警列表
-	QSettings PLCStatusiniset(AppPaths.PLCAlertPath,QSettings::IniFormat);
-	PLCStatusiniset.setIniCodec(QTextCodec::codecForName("GB2312"));
-	QString strSession = QString("/StatusType/total");
-	StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
-	for (int i=1;i<=StatusTypeNumber;i++)
+	if(SysConfigInfo.isOldPLC == 1)
 	{
-		strSession = QString("/StatusType/%1").arg(i);
-		m_PLCAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
+		QSettings PLCStatusiniset(AppPaths.PLColdAlert,QSettings::IniFormat);
+		PLCStatusiniset.setIniCodec(QTextCodec::codecForName("GB2312"));
+		QString strSession = QString("/StatusType/total");
+		StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
+		for (int i=0;i<StatusTypeNumber;i++)
+		{
+			strSession = QString("/StatusType/%1").arg(i);
+			m_PLCAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
+		}
+		nErrorCount = m_PLCAlertType.count();
+	}else{
+		QSettings PLCStatusiniset(AppPaths.PLCAlertPath,QSettings::IniFormat);
+		PLCStatusiniset.setIniCodec(QTextCodec::codecForName("GB2312"));
+		QString strSession = QString("/StatusType/total");
+		StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
+		for (int i=1;i<=StatusTypeNumber;i++)
+		{
+			strSession = QString("/StatusType/%1").arg(i);
+			m_PLCAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
+		}
+		strSession = QString("/CutomAlert/total");
+		StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
+		for (int i=1;i <= CUSTOMALERT;i++)
+		{
+			strSession = QString("/CutomAlert/%1").arg(i);
+			m_CustomAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
+		}
+		nErrorCount = m_PLCAlertType.count() + m_CustomAlertType.count();
 	}
-	strSession = QString("/CutomAlert/total");
-	StatusTypeNumber = PLCStatusiniset.value(strSession,0).toInt();
-	for (int i=1;i <= CUSTOMALERT;i++)
-	{
-		strSession = QString("/CutomAlert/%1").arg(i);
-		m_CustomAlertType<<QString::fromLocal8Bit(PLCStatusiniset.value(strSession,"NULL").toString());
-	}
-	nErrorCount = m_PLCAlertType.count() + m_CustomAlertType.count();
 	Logfile = new CLogFile();
 	Logfile->write("start check!",OperationLog);
 	nOver  = true;
@@ -426,6 +439,7 @@ void MultiInterface::slots_SaveCountByShift()
 			SaveCountInfo(ByShift,tr("Shift3"));
 			ClearCount();
 			CheckLicense();
+			deleteCountInfoConfig();
 			currentShift = 2;
 		}
 	}
@@ -479,6 +493,27 @@ void MultiInterface::slots_ConnectState()
 {
 	SendBasicNet(FRONTSTATE,"NULL");
 }
+void MultiInterface::deleteCountInfoConfig()
+{
+	QDate dateSelecte = QDate::currentDate();
+	dateSelecte = dateSelecte.addMonths(-3);
+	QList<QString> m_temp;
+	m_temp<<"CountInfo/timeCount/"<<"CountInfo/shiftCount/"<<"LogFiles/CheckLog/"<<"LogFiles/OperationLog/";
+	for(int i=0;i<m_temp.count();i++)
+	{
+		QString strDirPath;
+		QString strFileName;
+		strDirPath = pMainFrm->AppPaths.AppPath+ m_temp[i];
+		strFileName = pMainFrm->AppPaths.AppPath+ m_temp[i] + QString("%1-%2-%3.txt").arg(dateSelecte.year()).arg(dateSelecte.month()).arg(dateSelecte.day());
+		int temp = 0;
+		QDir dir(strDirPath);
+		while(dir.exists(strFileName))
+		{
+			dir.remove(strFileName);
+			strFileName = pMainFrm->AppPaths.AppPath+ m_temp[i] + QString("%1-%2-%3_%4.txt").arg(dateSelecte.year()).arg(dateSelecte.month()).arg(dateSelecte.day()).arg(++temp);
+		}
+	}
+}
 void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 {
 	bool bIsEmptyFile = false;
@@ -495,7 +530,7 @@ void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 		temp.mkpath(strFileName);
 
 	QDate date = QDate::currentDate();
-	strFileName = strFileName +	date.toString(Qt::ISODate) + ".txt";
+	strFileName = strFileName +	QString("%1-%2-%3.txt").arg(date.year()).arg(date.month()).arg(date.day());
 	if(!QFile::exists(strFileName))
 	{
 		QFile createFile(strFileName);
