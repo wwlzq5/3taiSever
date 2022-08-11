@@ -315,7 +315,7 @@ void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 		int ret = clientSocket[i]->write((char*)&nData,sizeof(MyStruct));
 		if(ret == -1)
 		{
-			Logfile->write(QString("TcpSever write to %3 nState:%1,writelen:%2").arg(nState).arg(ret).arg(clientSocket[i]->peerAddress().toString()),CheckLog);
+			Logfile->write(QString("TcpSever write to %1 nState:%2,writelen:%3").arg(clientSocket[i]->peerAddress().toString()).arg(nState).arg(ret),CheckLog);
 		}
 	}
 	SockectMutex.unlock();
@@ -492,6 +492,16 @@ void MultiInterface::slots_CloseConnect()
 void MultiInterface::slots_ConnectState()
 {
 	SendBasicNet(FRONTSTATE,"NULL");
+	SockectMutex.lock();
+	for(int i=0;i<clientSocket.size();i++)
+	{
+		if(!clientSocket[i]->isValid())
+		{
+			clientSocket.removeAt(i);
+			i--;
+		}
+	}
+	SockectMutex.unlock();
 }
 void MultiInterface::deleteCountInfoConfig()
 {
@@ -684,7 +694,7 @@ void MultiInterface::slot_StateChanged(QAbstractSocket::SocketState state)
 		}
 		break;
 	}
-	SockectMutex.lock();
+	/*SockectMutex.lock();
 	for(int i=0;i<clientSocket.size();i++)
 	{
 		if(!clientSocket[i]->isValid())
@@ -693,7 +703,7 @@ void MultiInterface::slot_StateChanged(QAbstractSocket::SocketState state)
 			i--;
 		}
 	}
-	SockectMutex.unlock();
+	SockectMutex.unlock();*/
 }
 void MultiInterface::onServerDataReady()
 {
