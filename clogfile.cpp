@@ -122,7 +122,7 @@ void WriteLogThread::write(QString strInfo,e_SaveLogType logtype, int showInferf
 
 		Initpath(logtype);
 
-		QString strFilePath = m_strlogfilepath + QString("%1-%2-%3.txt").arg(date.year()).arg(date.month()).arg(date.day());
+		QString strFilePath = m_strlogfilepath + date.toString(Qt::ISODate) + ".txt";
 
 		QDir *tempDir = new QDir;
 		bool exist = true;
@@ -133,12 +133,11 @@ void WriteLogThread::write(QString strInfo,e_SaveLogType logtype, int showInferf
 		while(exist)
 		{
 			exist = tempDir->exists(strFilePath);
-
 			if (exist)
 			{
 				strLastFilePath = strFilePath;
-				strFilePath = m_strlogfilepath + \
-					QString("%1-%2-%3_%4.txt").arg(date.year()).arg(date.month()).arg(date.day()).arg(++i);
+				strFilePath = strFilePath+ date.toString(Qt::ISODate)+QString("_%1.txt").arg(++i);
+				//strFilePath = m_strlogfilepath + QString("%1-%2-%3_%4.txt").arg(date.year()).arg(date.month()).arg(date.day()).arg(++i);
 			}
 		}
 		delete tempDir;
@@ -153,8 +152,8 @@ void WriteLogThread::write(QString strInfo,e_SaveLogType logtype, int showInferf
 		if (nTotalNum > 1000)
 		{
 			nTotalNum = 1;
-			strFilePath = m_strlogfilepath + \
-				QString("%1-%2-%3_%4.txt").arg(date.year()).arg(date.month()).arg(date.day()).arg(i);
+			strFilePath = m_strlogfilepath+ date.toString(Qt::ISODate)+QString("_%1.txt").arg(i);
+			//strFilePath = m_strlogfilepath + QString("%1-%2-%3_%4.txt").arg(date.year()).arg(date.month()).arg(date.day()).arg(i);
 
 			QSettings errorSet(strFilePath,QSettings::IniFormat);
 			errorSet.setIniCodec("GBK");

@@ -3,7 +3,7 @@
 
 MultiInterface *pMainFrm;
 #define CUSTOMALERT 3
-//#define JIAMI_INITIA
+#define JIAMI_INITIA
 #ifdef JIAMI_INITIA
 	#include "ProgramLicense.h"
 	CProgramLicense m_ProgramLicense;
@@ -139,18 +139,25 @@ void MultiInterface::InitConfig()
 	//nSaveDataAddress = new int[HORIZONTAL24];
 	nSaveDataAddress = new int[24];
 	
-	IpStruct nIptemp;
-	nIptemp.ipAddress=IP1;
-	nIptemp.nstate = false;
+	IpStruct* nIptemp = new IpStruct;
+	nIptemp->ipAddress=IP1;
+	nIptemp->nstate = false;
+	nIptemp->nCounter = 0;
 	IPAddress<<nIptemp;
-	nIptemp.ipAddress=IP2;
-	nIptemp.nstate = false;
-	IPAddress<<nIptemp;
-	nIptemp.ipAddress=IP3;
-	nIptemp.nstate = false;
-	IPAddress<<nIptemp;
+
+	IpStruct* nIptemp1 = new IpStruct;
+	nIptemp1->ipAddress=IP2;
+	nIptemp1->nstate = false;
+	nIptemp1->nCounter = 0;
+	IPAddress<<nIptemp1;
+
+	IpStruct* nIptemp2 = new IpStruct;
+	nIptemp2->ipAddress=IP3;
+	nIptemp2->nstate = false;
+	nIptemp2->nCounter = 0;
+	IPAddress<<nIptemp2;
+
 	nSheetPage = MAININTERFACE;
-	
 	n_StartTime = QDateTime::currentDateTime();
 	GetCursorPos(&gcPosition);
 }
@@ -191,7 +198,7 @@ void MultiInterface::InitConnect()
 	connect(this,SIGNAL(UpdateIOCard(int*,int)),this,SLOT(slots_OnUpdateIOCard(int*,int)));
 
 	nConnectState = new QTimer;
-	nConnectState->setInterval(10*1000);
+	nConnectState->setInterval(15*1000);
 	connect(nConnectState,SIGNAL(timeout()),this,SLOT(slots_ConnectState()));
 	nConnectState->start();
 	nScreenTime = new QTimer;
@@ -285,22 +292,18 @@ void MultiInterface::slots_loginState(int nPermiss)
 
 void MultiInterface::slots_SaveRecord()
 {
-	//nTmpcountData = nRunInfo;
 	SaveCountInfo(ByTime,tr("Save"));
 }
-/*
-void MultiInterface::slots_disConnected()
-{
-	Logfile->write(tr("disconnect"),OperationLog);
-	QTcpSocket* tcp = static_cast<QTcpSocket*>(sender());
-	onServerConnected(tcp->peerAddress().toString(),false);
-}
-*/
+
 void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 {
 	SockectMutex.lock();
-	for (int i=0;i<clientSocket.count();i++)
+	for (int i=0;i<IPAddress.count();i++)
 	{
+		if(!IPAddress[i]->nstate)
+		{
+			continue;
+		}
 		MyStruct nData;
 		nData.nState = nState;
 		nData.nCount = sizeof(MyStruct);
@@ -312,10 +315,13 @@ void MultiInterface::SendBasicNet(StateEnum nState,QString nTemp)
 		}else{
 			strcpy_s(nData.nTemp,nTemp.toStdString().c_str());
 		}
-		int ret = clientSocket[i]->write((char*)&nData,sizeof(MyStruct));
-		if(ret == -1)
+		if(IPAddress[i]->clientSocket->isValid())
 		{
-			Logfile->write(QString("TcpSever write to %1 nState:%2,writelen:%3").arg(clientSocket[i]->peerAddress().toString()).arg(nState).arg(ret),CheckLog);
+			int ret = IPAddress[i]->clientSocket->write((char*)&nData,sizeof(MyStruct));
+			if(ret == -1)
+			{
+				Logfile->write(QString("TcpSever write to %1 nState:%2,writelen:%3").arg(IPAddress[i]->ipAddress).arg(nState).arg(ret),CheckLog);
+			}
 		}
 	}
 	SockectMutex.unlock();
@@ -365,12 +371,10 @@ void MultiInterface::slots_clickAccont(int nTest)
 		break;
 	case 8:
 		nUserWidget->show();
-		//SendBasicNet(LOCKSCREEN,"3");
 		Logfile->write(tr("into lock Interface"),OperationLog);
 		break;
 	}
 }
-
 void MultiInterface::slots_SaveCountBytime()
 {
 	if(!SysConfigInfo.isSaveRecord)
@@ -491,17 +495,36 @@ void MultiInterface::slots_CloseConnect()
 }
 void MultiInterface::slots_ConnectState()
 {
-	SendBasicNet(FRONTSTATE,"NULL");
-	SockectMutex.lock();
-	for(int i=0;i<clientSocket.size();i++)
+	SendBasicNet(FRONTSTATE,"NULL");//IPAddress[1].startTime
+	for(int i=0;i<3;i++)
 	{
-		if(!clientSocket[i]->isValid())
+		if(IPAddress[i]->nstate)
 		{
-			clientSocket.removeAt(i);
-			i--;
+			if(IPAddress[i]->startTime - IPAddress[i]->endTime == 0)
+			{
+				IPAddress[i]->nCounter++;
+				if(IPAddress[i]->nCounter == 3)
+				{
+					IPAddress[i]->nstate = false;
+					if(IPAddress[i]->ipAddress == IP1)
+					{
+						ui.checkBox->setChecked(false);
+					}
+					else if(IPAddress[i]->ipAddress == IP2)
+					{
+						ui.checkBox_2->setChecked(false);
+					}
+					else if(IPAddress[i]->ipAddress == IP3)
+					{
+						ui.checkBox_3->setChecked(false);
+					}
+				}
+			}else{
+				IPAddress[i]->nCounter = 0;
+				IPAddress[i]->startTime = IPAddress[i]->endTime;
+			}
 		}
 	}
-	SockectMutex.unlock();
 }
 void MultiInterface::deleteCountInfoConfig()
 {
@@ -513,14 +536,15 @@ void MultiInterface::deleteCountInfoConfig()
 	{
 		QString strDirPath;
 		QString strFileName;
-		strDirPath = pMainFrm->AppPaths.AppPath+ m_temp[i];
-		strFileName = pMainFrm->AppPaths.AppPath+ m_temp[i] + QString("%1-%2-%3.txt").arg(dateSelecte.year()).arg(dateSelecte.month()).arg(dateSelecte.day());
+		strDirPath = pMainFrm->AppPaths.AppPath+ m_temp[i];//strFileName = strFileName +	date.toString(Qt::ISODate) + ".txt";
+		strFileName = pMainFrm->AppPaths.AppPath+ m_temp[i] + dateSelecte.toString(Qt::ISODate) + ".txt";
 		int temp = 0;
 		QDir dir(strDirPath);
 		while(dir.exists(strFileName))
 		{
 			dir.remove(strFileName);
-			strFileName = pMainFrm->AppPaths.AppPath+ m_temp[i] + QString("%1-%2-%3_%4.txt").arg(dateSelecte.year()).arg(dateSelecte.month()).arg(dateSelecte.day()).arg(++temp);
+			//strFileName = pMainFrm->AppPaths.AppPath+ m_temp[i] + QString("%1-%2-%3_%4.txt").arg(dateSelecte.year()).arg(dateSelecte.month()).arg(dateSelecte.day()).arg(++temp);
+			strFileName = pMainFrm->AppPaths.AppPath+ m_temp[i] + dateSelecte.toString(Qt::ISODate)+QString("_%1.txt").arg(++temp);
 		}
 	}
 }
@@ -540,7 +564,8 @@ void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 		temp.mkpath(strFileName);
 
 	QDate date = QDate::currentDate();
-	strFileName = strFileName +	QString("%1-%2-%3.txt").arg(date.year()).arg(date.month()).arg(date.day());
+	//strFileName = strFileName +	QString("%1-%2-%3.txt").arg(date.year()).arg(date.month()).arg(date.day());
+	strFileName = strFileName +	date.toString(Qt::ISODate) + ".txt";
 	if(!QFile::exists(strFileName))
 	{
 		QFile createFile(strFileName);
@@ -662,11 +687,36 @@ void MultiInterface::SaveToDatebase()
 void MultiInterface::ServerNewConnection()
 {
 	QTcpSocket* tcp = m_temptcpServer->nextPendingConnection(); //获取新的客户端信息
-	Logfile->write(QString("connected IP:%1").arg(tcp->peerAddress().toString()),CheckLog);
-	SockectMutex.lock();
-	clientSocket.push_back(tcp);
-	SockectMutex.unlock();
-	onServerConnected(tcp->peerAddress().toString(),true);
+	QString nIpAddress = tcp->peerAddress().toString();
+	Logfile->write(QString("connected IP:%1").arg(nIpAddress),CheckLog);
+	QTime nTime = QTime::currentTime();
+	if(nIpAddress == IP1)
+	{
+		IPAddress[0]->startTime = nTime.second();
+		//IPAddress[0]->endTime = nTime.second();
+		IPAddress[0]->ipAddress = nIpAddress;
+		IPAddress[0]->clientSocket = tcp;
+		IPAddress[0]->nstate = true;
+		ui.checkBox->setChecked(true);
+	}
+	else if(nIpAddress == IP2 || nIpAddress == "127.0.0.1")
+	{
+		IPAddress[1]->startTime = nTime.second();
+		//IPAddress[1]->endTime = nTime.second();
+		IPAddress[1]->ipAddress = nIpAddress;
+		IPAddress[1]->clientSocket = tcp;
+		IPAddress[1]->nstate = true;
+		ui.checkBox_2->setChecked(true);
+	}
+	else if(nIpAddress == IP3)
+	{
+		IPAddress[2]->startTime = nTime.second();
+		//IPAddress[2]->endTime = nTime.second();
+		IPAddress[2]->ipAddress = nIpAddress;
+		IPAddress[2]->clientSocket = tcp;
+		IPAddress[2]->nstate = true;
+		ui.checkBox_3->setChecked(true);
+	}
 	connect(tcp, SIGNAL(readyRead()), this, SLOT(onServerDataReady()));
 	connect(tcp, SIGNAL(stateChanged(QAbstractSocket::SocketState )), this, SLOT(slot_StateChanged( QAbstractSocket::SocketState )));
 }
@@ -694,16 +744,6 @@ void MultiInterface::slot_StateChanged(QAbstractSocket::SocketState state)
 		}
 		break;
 	}
-	/*SockectMutex.lock();
-	for(int i=0;i<clientSocket.size();i++)
-	{
-		if(!clientSocket[i]->isValid())
-		{
-			clientSocket.removeAt(i);
-			i--;
-		}
-	}
-	SockectMutex.unlock();*/
 }
 void MultiInterface::onServerDataReady()
 {
@@ -745,16 +785,13 @@ void MultiInterface::onServerDataReady()
 			case CONNECT:
 				if(((MyStruct*)m_buffer.data())->nUnit == LEADING)
 				{
-					IPAddress[0].nstate = true;
-					IPAddress[0].startTime = nTime.second();
+					IPAddress[0]->endTime = nTime.second();
 				}else if(((MyStruct*)m_buffer.data())->nUnit == CLAMPING)
 				{
-					IPAddress[1].nstate = true;
-					IPAddress[1].startTime = nTime.second();
+					IPAddress[1]->endTime = nTime.second();
 				}else if(((MyStruct*)m_buffer.data())->nUnit == BACKING)
 				{
-					IPAddress[2].nstate = true;
-					IPAddress[2].startTime = nTime.second();
+					IPAddress[2]->endTime = nTime.second();
 				}
 				break;
 			case ALERT:
@@ -909,21 +946,6 @@ void MultiInterface::CalculateData(QByteArray buffer)
 void MultiInterface::slots_OnUpdateIOCard(int* test,int ID)
 {
 	nIOCard[ID]->setEditValue(test,nAlert->nErrorType.at(test[17]));
-}
-void MultiInterface::onServerConnected(QString IPAddress,bool nState)
-{
-	if(IPAddress == IP1)
-	{
-		ui.checkBox->setChecked(nState);
-	}
-	else if(IPAddress == IP2)
-	{
-		ui.checkBox_2->setChecked(nState);
-	}
-	else if(IPAddress == IP3)
-	{
-		ui.checkBox_3->setChecked(nState);
-	}
 }
 void MultiInterface::ClearCount(bool isChangeShift)
 {

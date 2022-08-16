@@ -16,7 +16,7 @@
 #define IP3 "192.168.250.203"
 
 #define PASSWORD "123456"
-
+#include <QTcpSocket>
 enum StateEnum
 {
 	SENDDATA,//发送数据模式
@@ -54,7 +54,18 @@ struct IpStruct
 {
 	QString ipAddress; //ip地址
 	int startTime; //时间，用于判断是否网络连接中断
+	int endTime;
 	bool nstate; //目前连接状态
+	int nCounter;
+	QTcpSocket* clientSocket;
+	IpStruct()
+	{
+		nCounter = 0;
+		startTime = 0;
+		endTime = 0;
+		nstate = false;
+		clientSocket = new QTcpSocket;
+	}
 };
 struct MyErrorType
 {

@@ -61,7 +61,6 @@ public:
 	void InitConfig();
 	void closeEvent(QCloseEvent *event);
 	void CalculateData(QByteArray);
-	void onServerConnected(QString IPAddress,bool nState);
 	void ClearCount(bool isChangeShift = true);
 	void UpdateCountForShow(bool isFirst=false);
 	void SaveCountInfo(SaveReportType pType,QString pTxt="");
@@ -105,7 +104,7 @@ public:
 	QTimer* nConnectState;
 	QStringList m_PLCAlertType;
 	QStringList m_CustomAlertType;
-	QVector<IpStruct> IPAddress;
+	QVector<IpStruct*> IPAddress;
 	QTcpServer* m_temptcpServer;
 	QSignalMapper* signal_mapper;
 	DataBase* m_Datebase;

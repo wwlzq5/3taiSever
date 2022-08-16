@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'multiinterface.h'
 **
-** Created: Wed Aug 3 16:19:02 2022
+** Created: Thu Aug 11 15:37:26 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!

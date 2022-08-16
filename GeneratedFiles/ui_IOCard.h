@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'IOCard.ui'
 **
-** Created: Thu Aug 4 10:04:44 2022
+** Created: Thu Aug 11 14:23:12 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
