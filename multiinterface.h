@@ -75,7 +75,7 @@ public:
 signals:
 	void sianal_WarnMessage(int,QString);
 	void UpdateIOCard(int*,int);
-	void sianal_updateCountInfo(int,int,float);
+	void sianal_updateCountInfo(int,int,int,int);
 	void sianal_UpdateTable1(cErrorInfo);
 public slots:
 	void slots_ModeState(StateEnum,QString);
@@ -126,7 +126,6 @@ public:
 	int StatusTypeNumber;
 	int nAllCheckNum;
 	int nAllFailNum;
-	QDateTime n_StartTime;
 	QTimer *nScreenTime;
 	QTimer *timerSaveList;
 	int currentShift;

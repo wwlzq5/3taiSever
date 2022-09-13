@@ -158,7 +158,6 @@ void MultiInterface::InitConfig()
 	IPAddress<<nIptemp2;
 
 	nSheetPage = MAININTERFACE;
-	n_StartTime = QDateTime::currentDateTime();
 	GetCursorPos(&gcPosition);
 }
 
@@ -224,7 +223,7 @@ void MultiInterface::InitConnect()
 	ui.stackedWidget->addWidget(nAlert);
 	ui.stackedWidget->addWidget(nWidgetMode);
 	ui.stackedWidget->setCurrentWidget(nWidgetCount);
-	connect(this,SIGNAL(sianal_updateCountInfo(int,int,float)),nWidgetCount,SLOT(slots_updateCountInfo(int,int,float)));
+	connect(this,SIGNAL(sianal_updateCountInfo(int,int,int,int)),nWidgetCount,SLOT(slots_updateCountInfo(int,int,int,int)));
 	connect(this,SIGNAL(sianal_UpdateTable1(cErrorInfo)),nWidgetCount,SLOT(slots_UpdateTable1(cErrorInfo)));
 
 	signal_mapper = new QSignalMapper(this);
@@ -506,15 +505,13 @@ void MultiInterface::slots_ConnectState()
 				if(IPAddress[i]->nCounter == 3)
 				{
 					IPAddress[i]->nstate = false;
-					if(IPAddress[i]->ipAddress == IP1)
+					if(i == 0)
 					{
 						ui.checkBox->setChecked(false);
-					}
-					else if(IPAddress[i]->ipAddress == IP2)
+					}else if(i == 1)
 					{
 						ui.checkBox_2->setChecked(false);
-					}
-					else if(IPAddress[i]->ipAddress == IP3)
+					}else if(i == 2)
 					{
 						ui.checkBox_3->setChecked(false);
 					}
@@ -689,34 +686,6 @@ void MultiInterface::ServerNewConnection()
 	QTcpSocket* tcp = m_temptcpServer->nextPendingConnection(); //获取新的客户端信息
 	QString nIpAddress = tcp->peerAddress().toString();
 	Logfile->write(QString("connected IP:%1").arg(nIpAddress),CheckLog);
-	QTime nTime = QTime::currentTime();
-	if(nIpAddress == IP1)
-	{
-		IPAddress[0]->startTime = nTime.second();
-		//IPAddress[0]->endTime = nTime.second();
-		IPAddress[0]->ipAddress = nIpAddress;
-		IPAddress[0]->clientSocket = tcp;
-		IPAddress[0]->nstate = true;
-		ui.checkBox->setChecked(true);
-	}
-	else if(nIpAddress == IP2 || nIpAddress == "127.0.0.1")
-	{
-		IPAddress[1]->startTime = nTime.second();
-		//IPAddress[1]->endTime = nTime.second();
-		IPAddress[1]->ipAddress = nIpAddress;
-		IPAddress[1]->clientSocket = tcp;
-		IPAddress[1]->nstate = true;
-		ui.checkBox_2->setChecked(true);
-	}
-	else if(nIpAddress == IP3)
-	{
-		IPAddress[2]->startTime = nTime.second();
-		//IPAddress[2]->endTime = nTime.second();
-		IPAddress[2]->ipAddress = nIpAddress;
-		IPAddress[2]->clientSocket = tcp;
-		IPAddress[2]->nstate = true;
-		ui.checkBox_3->setChecked(true);
-	}
 	connect(tcp, SIGNAL(readyRead()), this, SLOT(onServerDataReady()));
 	connect(tcp, SIGNAL(stateChanged(QAbstractSocket::SocketState )), this, SLOT(slot_StateChanged( QAbstractSocket::SocketState )));
 }
@@ -734,7 +703,7 @@ void MultiInterface::slot_StateChanged(QAbstractSocket::SocketState state)
 		{
 			ui.checkBox->setChecked(false);
 		}
-		else if(tcp->peerAddress().toString() == IP2)
+		else if(tcp->peerAddress().toString() == IP2 || tcp->peerAddress().toString() == "127.0.0.1")
 		{
 			ui.checkBox_2->setChecked(false);
 		}
@@ -785,12 +754,21 @@ void MultiInterface::onServerDataReady()
 			case CONNECT:
 				if(((MyStruct*)m_buffer.data())->nUnit == LEADING)
 				{
+					IPAddress[0]->clientSocket = m_tcpSocket;
+					IPAddress[0]->nstate = true;
+					ui.checkBox->setChecked(true);
 					IPAddress[0]->endTime = nTime.second();
 				}else if(((MyStruct*)m_buffer.data())->nUnit == CLAMPING)
 				{
+					IPAddress[1]->clientSocket = m_tcpSocket;
+					IPAddress[1]->nstate = true;
+					ui.checkBox_2->setChecked(true);
 					IPAddress[1]->endTime = nTime.second();
 				}else if(((MyStruct*)m_buffer.data())->nUnit == BACKING)
 				{
+					IPAddress[2]->clientSocket = m_tcpSocket;
+					IPAddress[2]->nstate = true;
+					ui.checkBox_3->setChecked(true);
 					IPAddress[2]->endTime = nTime.second();
 				}
 				break;
@@ -843,7 +821,7 @@ DWORD WINAPI MultiInterface::DataCountThread( void *arg )
 			for(int i=0;i<nDataSize;i++) // 通过循环所有综合数据保存在 nErrorFristData中
 			{
 				pThis->nRunInfo.iAllCount += 1;
-				if((nErrorFristData[i].nType > 0 && nErrorFristData[i].nType < 50)||(nErrorClampData[i].nType > 0 && nErrorClampData[i].nType < 50)||(nErrorBACKData[i].nType > 0 && nErrorBACKData[i].nType<50))//综合有缺陷，计数加1
+				if((nErrorFristData[i].nType > 0 && nErrorFristData[i].nType < ERRORTYPE_MAX_COUNT)||(nErrorClampData[i].nType > 0 && nErrorClampData[i].nType < ERRORTYPE_MAX_COUNT)||(nErrorBACKData[i].nType > 0 && nErrorBACKData[i].nType<ERRORTYPE_MAX_COUNT))//综合有缺陷，计数加1
 				{
 					pThis->nRunInfo.iFailCount += 1;
 					if(nErrorFristData[i].nErrorArea <= nErrorClampData[i].nErrorArea && nErrorClampData[i].nErrorArea >= nErrorBACKData[i].nErrorArea)
@@ -920,10 +898,12 @@ void MultiInterface::CalculateData(QByteArray buffer)
 		emit UpdateIOCard(nSaveDataAddress,nUnit);
 		if(nUnit == CLAMPING)//报警标志位
 		{
+			int nReadSuccessMode = nSaveDataAddress[19];
+			int nReadModeCount = nSaveDataAddress[20];
 			int nPlcTypeid = nSaveDataAddress[23];
 			nAllCheckNum = nSaveDataAddress[21];
 			nAllFailNum = nSaveDataAddress[22];
-			emit sianal_updateCountInfo(nAllCheckNum,nAllFailNum,0);
+			emit sianal_updateCountInfo(nAllCheckNum,nAllFailNum,nReadSuccessMode,nReadModeCount);
 			if(nPlcTypeid >= -1 && nPlcTypeid < nErrorCount)
 			{
 				if(nPlcTypeid == -1)
@@ -982,7 +962,7 @@ void MultiInterface::ClearCount(bool isChangeShift)
 }
 void MultiInterface::UpdateCountForShow(bool isFirst)
 {
-	emit sianal_updateCountInfo(nAllCheckNum,nAllFailNum,0);
+	emit sianal_updateCountInfo(nAllCheckNum,nAllFailNum,0,0);
 	emit sianal_UpdateTable1(nRunInfo);
 	
 	if (!isFirst)

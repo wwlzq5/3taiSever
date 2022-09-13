@@ -45,6 +45,7 @@ void widget_count::init()
 	nameLayout->addWidget(buttonTurn);
 	nameLayout->setSpacing(5);
 	nameLayout->setContentsMargins(5,0,5,0);
+	ui.label_modelRate->setText(tr("Model Rate") + "\n" + QString::number(0,'f',2)+"%");
 
 	//初始化实时显示的缺陷统计表
 	ui.tableView_1->setEditTriggers(QAbstractItemView::NoEditTriggers);		//禁止编辑
@@ -460,7 +461,7 @@ void widget_count::slots_ShowPie(QModelIndex modelIndex)
 	slots_ShowPieImage1(tmpInfo);
 }
 
-void widget_count::slots_updateCountInfo(int total,int failNum,float modelRate)
+void widget_count::slots_updateCountInfo(int total,int failNum,int modePass,int ModeCount)
 {
 	if (total >= 0 && failNum >= 0)
 	{
@@ -473,10 +474,12 @@ void widget_count::slots_updateCountInfo(int total,int failNum,float modelRate)
 		}
 		ui.label_failurRate->setText(tr("Reject Rate")+"\n"+QString::number(failRate,'f',2)+"%");
 	}
-	if (modelRate >= 0)
+	if (ModeCount > 0 && modePass > 0)
 	{
-		ui.label_modelRate->setText(tr("Model Rate") + "\n" + QString::number(modelRate *100 ,'f',2)+"%");
-	}	
+		double failRate=0.0;
+		failRate = (double)modePass *100 / ModeCount;
+		ui.label_modelRate->setText(tr("Model Rate") + "\n" + QString::number(failRate,'f',2)+"%");
+	}
 }
 
 void widget_count::slots_UpdateTable1(cErrorInfo pCountdates)
@@ -576,7 +579,7 @@ void widget_count::slots_ShowPieImage1(cErrorInfo pCountdates)
 	int tempCount=0;
 	QList<int> Types;
 	QList<int> Datas;
-	for (int i=0;i<50;i++)
+	for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 	{
 		bool havedata = false;
 		if (pCountdates.iFrontErrorByType[i] != 0)

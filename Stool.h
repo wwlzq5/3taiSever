@@ -5,7 +5,7 @@
 #define HORIZONTAL24 sizeof(int)*24
 #define HORIZONTAL4 sizeof(int)*4
 
-
+#define ERRORTYPE_MAX_COUNT 100
 
 //#define IP1 "192.168.250.201"
 //#define IP2 "192.168.20.101"
@@ -60,6 +60,7 @@ struct IpStruct
 	QTcpSocket* clientSocket;
 	IpStruct()
 	{
+		ipAddress = QString("Nothing");
 		nCounter = 0;
 		startTime = 0;
 		endTime = 0;

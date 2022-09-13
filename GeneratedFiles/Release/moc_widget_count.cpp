@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widget_count.h'
 **
-** Created: Thu Aug 11 14:23:12 2022
+** Created: Thu Sep 8 17:13:23 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -48,14 +48,14 @@ static const uint qt_meta_data_widget_count[] = {
      306,   13,   13,   13, 0x08,
      331,   13,   13,   13, 0x08,
      358,   13,   13,   13, 0x08,
-     408,  384,   13,   13, 0x0a,
-     457,  445,   13,   13, 0x0a,
-     502,  488,   13,   13, 0x0a,
-     574,  557,   13,   13, 0x0a,
-     613,  445,   13,   13, 0x0a,
-     645,  445,   13,   13, 0x0a,
-     725,  693,   13,   13, 0x0a,
-     798,  488,   13,   13, 0x0a,
+     400,  384,   13,   13, 0x0a,
+     451,  439,   13,   13, 0x0a,
+     496,  482,   13,   13, 0x0a,
+     568,  551,   13,   13, 0x0a,
+     607,  439,   13,   13, 0x0a,
+     639,  439,   13,   13, 0x0a,
+     719,  687,   13,   13, 0x0a,
+     792,  482,   13,   13, 0x0a,
 
        0        // eod
 };
@@ -73,9 +73,8 @@ static const char qt_meta_stringdata_widget_count[] = {
     "slot_DeleteRecord_clicked()\0"
     "slot_OpenExcel_clicked()\0"
     "slot_SearchShift_clicked()\0"
-    "slot_SaveRecord_clicked()\0"
-    "total,failNum,modelRate\0"
-    "slots_updateCountInfo(int,int,float)\0"
+    "slot_SaveRecord_clicked()\0total,failNum,,\0"
+    "slots_updateCountInfo(int,int,int,int)\0"
     "pCountdates\0slots_UpdateTable1(cErrorInfo)\0"
     "pTimes,pInfos\0"
     "slots_UpdateTable2(QList<long long>,QList<cErrorInfo>)\0"
@@ -110,7 +109,7 @@ void widget_count::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 12: _t->slot_OpenExcel_clicked(); break;
         case 13: _t->slot_SearchShift_clicked(); break;
         case 14: _t->slot_SaveRecord_clicked(); break;
-        case 15: _t->slots_updateCountInfo((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3]))); break;
+        case 15: _t->slots_updateCountInfo((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
         case 16: _t->slots_UpdateTable1((*reinterpret_cast< cErrorInfo(*)>(_a[1]))); break;
         case 17: _t->slots_UpdateTable2((*reinterpret_cast< QList<long long>(*)>(_a[1])),(*reinterpret_cast< QList<cErrorInfo>(*)>(_a[2]))); break;
         case 18: _t->slots_UpdateTable2((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< cErrorInfo(*)>(_a[2]))); break;

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'multiinterface.h'
 **
-** Created: Thu Aug 11 15:37:26 2022
+** Created: Wed Aug 31 09:22:31 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -33,32 +33,32 @@ static const uint qt_meta_data_MultiInterface[] = {
  // signals: signature, parameters, type, tag, flags
       18,   16,   15,   15, 0x05,
       50,   16,   15,   15, 0x05,
-      76,   73,   15,   15, 0x05,
-     114,   15,   15,   15, 0x05,
+      77,   73,   15,   15, 0x05,
+     117,   15,   15,   15, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-     146,   16,   15,   15, 0x0a,
-     181,   15,   15,   15, 0x0a,
-     204,   15,   15,   15, 0x0a,
-     226,   15,   15,   15, 0x0a,
-     246,   15,   15,   15, 0x0a,
-     267,   16,   15,   15, 0x0a,
-     298,   15,   15,   15, 0x0a,
-     322,   15,   15,   15, 0x0a,
-     347,   15,   15,   15, 0x0a,
-     371,   15,   15,   15, 0x0a,
-     394,   15,   15,   15, 0x0a,
-     415,   15,   15,   15, 0x0a,
-     463,   15,   15,   15, 0x0a,
-     485,   15,   15,   15, 0x0a,
+     149,   16,   15,   15, 0x0a,
+     184,   15,   15,   15, 0x0a,
+     207,   15,   15,   15, 0x0a,
+     229,   15,   15,   15, 0x0a,
+     249,   15,   15,   15, 0x0a,
+     270,   16,   15,   15, 0x0a,
+     301,   15,   15,   15, 0x0a,
+     325,   15,   15,   15, 0x0a,
+     350,   15,   15,   15, 0x0a,
+     374,   15,   15,   15, 0x0a,
+     397,   15,   15,   15, 0x0a,
+     418,   15,   15,   15, 0x0a,
+     466,   15,   15,   15, 0x0a,
+     488,   15,   15,   15, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_MultiInterface[] = {
     "MultiInterface\0\0,\0sianal_WarnMessage(int,QString)\0"
-    "UpdateIOCard(int*,int)\0,,\0"
-    "sianal_updateCountInfo(int,int,float)\0"
+    "UpdateIOCard(int*,int)\0,,,\0"
+    "sianal_updateCountInfo(int,int,int,int)\0"
     "sianal_UpdateTable1(cErrorInfo)\0"
     "slots_ModeState(StateEnum,QString)\0"
     "slots_clickAccont(int)\0ServerNewConnection()\0"
@@ -80,7 +80,7 @@ void MultiInterface::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         switch (_id) {
         case 0: _t->sianal_WarnMessage((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 1: _t->UpdateIOCard((*reinterpret_cast< int*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 2: _t->sianal_updateCountInfo((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3]))); break;
+        case 2: _t->sianal_updateCountInfo((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
         case 3: _t->sianal_UpdateTable1((*reinterpret_cast< cErrorInfo(*)>(_a[1]))); break;
         case 4: _t->slots_ModeState((*reinterpret_cast< StateEnum(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 5: _t->slots_clickAccont((*reinterpret_cast< int(*)>(_a[1]))); break;
@@ -155,9 +155,9 @@ void MultiInterface::UpdateIOCard(int * _t1, int _t2)
 }
 
 // SIGNAL 2
-void MultiInterface::sianal_updateCountInfo(int _t1, int _t2, float _t3)
+void MultiInterface::sianal_updateCountInfo(int _t1, int _t2, int _t3, int _t4)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)) };
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 

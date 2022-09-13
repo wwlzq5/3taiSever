@@ -4,7 +4,7 @@
 
 #include <QWidget>
 #include "ui_widget_count.h"
-
+#include "Stool.h"
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QSettings>
@@ -73,7 +73,7 @@ public slots:
 		只刷新总数、踢废数、踢废率， modelRate可以设-1
 		只刷新读模率， total 或 failNum 设为 -1
 	***********************************************************/
-	void slots_updateCountInfo(int total,int failNum,float modelRate);
+	void slots_updateCountInfo(int total,int failNum,int,int);
 	/**********************************************************
 		更新显示每个相机检测的缺陷数
 	***********************************************************/
@@ -315,7 +315,7 @@ public:
 		FrontCount = 0;
 		ClampCount = 0;
 		RearCount = 0;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			iErrorByType[i] = 0;
 			iFrontErrorByType[i] = 0;
@@ -331,7 +331,7 @@ public:
 		FrontCount += pCountInfo.FrontCount;
 		ClampCount += pCountInfo.ClampCount;
 		RearCount  += pCountInfo.RearCount;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			iErrorByType[i]		 += pCountInfo.iErrorByType[i];
 			iFrontErrorByType[i] += pCountInfo.iFrontErrorByType[i];
@@ -348,7 +348,7 @@ public:
 		tmp.FrontCount= this->FrontCount  + pCountInfo.FrontCount;
 		tmp.ClampCount= this->ClampCount  + pCountInfo.ClampCount;
 		tmp.RearCount = this->RearCount   + pCountInfo.RearCount;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			tmp.iErrorByType[i]		 = this->iErrorByType[i]	  + pCountInfo.iErrorByType[i];
 			tmp.iFrontErrorByType[i] = this->iFrontErrorByType[i] + pCountInfo.iFrontErrorByType[i];
@@ -365,7 +365,7 @@ public:
 		FrontCount -= pCountInfo.FrontCount;
 		ClampCount -= pCountInfo.ClampCount;
 		RearCount  -= pCountInfo.RearCount;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			iErrorByType[i]		 -= pCountInfo.iErrorByType[i];
 			iFrontErrorByType[i] -= pCountInfo.iFrontErrorByType[i];
@@ -382,7 +382,7 @@ public:
 		tmp.FrontCount= this->FrontCount  - pCountInfo.FrontCount;
 		tmp.ClampCount= this->ClampCount  - pCountInfo.ClampCount;
 		tmp.RearCount = this->RearCount   - pCountInfo.RearCount;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			tmp.iErrorByType[i]		 = this->iErrorByType[i]	  - pCountInfo.iErrorByType[i];
 			tmp.iFrontErrorByType[i] = this->iFrontErrorByType[i] - pCountInfo.iFrontErrorByType[i];
@@ -399,7 +399,7 @@ public:
 		FrontCount = pCountInfo.FrontCount;
 		ClampCount = pCountInfo.ClampCount;
 		RearCount = pCountInfo.RearCount;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			iErrorByType[i]		 = pCountInfo.iErrorByType[i];
 			iFrontErrorByType[i] = pCountInfo.iFrontErrorByType[i];
@@ -411,7 +411,7 @@ public:
 	int GetFrontCount()
 	{
 		int pCount=0;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			pCount += iFrontErrorByType[i];
 		}
@@ -421,7 +421,7 @@ public:
 	int GetClampCount()
 	{
 		int pCount=0;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			pCount += iClampErrorByType[i];
 		}
@@ -431,7 +431,7 @@ public:
 	int GetRearCount()
 	{
 		int pCount=0;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			pCount += iRearErrorByType[i];
 		}
@@ -454,7 +454,7 @@ public:
 
 	int GetErrorByTypeCount(int ptype)
 	{
-		if(ptype>=50)
+		if(ptype>=ERRORTYPE_MAX_COUNT)
 			return 0;
 		return iFrontErrorByType[ptype] + iClampErrorByType[ptype] + iRearErrorByType[ptype];
 	}
@@ -466,7 +466,7 @@ public:
 		FrontCount = 0;
 		ClampCount = 0;
 		RearCount = 0;
-		for (int i=0;i<50;i++)
+		for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 		{
 			iErrorByType[i] = 0;
 			iFrontErrorByType[i] = 0;
@@ -487,14 +487,14 @@ public:
 	int RearCount;
 
 	//单个缺陷类型踢废数
-	int iErrorByType[50];
+	int iErrorByType[ERRORTYPE_MAX_COUNT];
 
 	//前壁单个缺陷类型踢废数
-	int iFrontErrorByType[50];
+	int iFrontErrorByType[ERRORTYPE_MAX_COUNT];
 	//夹持单个缺陷类型踢废数
-	int iClampErrorByType[50];
+	int iClampErrorByType[ERRORTYPE_MAX_COUNT];
 	//后壁单个缺陷类型踢废数
-	int iRearErrorByType[50];
+	int iRearErrorByType[ERRORTYPE_MAX_COUNT];
 };
 
 #endif // WIDGET_COUNT_H

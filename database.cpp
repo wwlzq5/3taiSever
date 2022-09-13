@@ -61,9 +61,9 @@ bool DataBase::createLastTimeDataTable()
 bool DataBase::insert(QString timestr,cErrorInfo info)
 {
 	QByteArray frontData,ClampData,RearData;
-	frontData.append((char*)info.iFrontErrorByType,sizeof(int)*50);
-	ClampData.append((char*)info.iClampErrorByType,sizeof(int)*50);
-	RearData.append((char*)info.iRearErrorByType,sizeof(int)*50);
+	frontData.append((char*)info.iFrontErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
+	ClampData.append((char*)info.iClampErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
+	RearData.append((char*)info.iRearErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
 
 	QSqlDatabase m_db = QSqlDatabase::database(sqlConnectName);
 	if(!m_db.isOpen())
@@ -101,7 +101,7 @@ bool DataBase::queryByOnce(QString timeStr,long long &ptime,cErrorInfo &info)
 			ClampData = query.value(3).toByteArray();
 			RearData  = query.value(4).toByteArray();
 
-			for (int i=0;i<50;i++)
+			for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 			{
 				int tmp=0;
 				memcpy(&tmp,frontData.data() + sizeof(int)*i,sizeof(int));
@@ -139,7 +139,7 @@ bool DataBase::queryByDay(QString dayStr,QList<long long> &pTimes,QList<cErrorIn
 			ClampData = query.value(3).toByteArray();
 			RearData  = query.value(4).toByteArray();
 
-			for (int i=0;i<50;i++)
+			for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 			{
 				int tmp=0;
 				memcpy(&tmp,frontData.data() + sizeof(int)*i,sizeof(int));
@@ -177,7 +177,7 @@ bool DataBase::queryByShift(QString pStartTime,QString pEndTime,QList<long long>
 			ClampData = query.value(3).toByteArray();
 			RearData  = query.value(4).toByteArray();
 
-			for (int i=0;i<50;i++)
+			for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 			{
 				int tmp=0;
 				memcpy(&tmp,frontData.data() + sizeof(int)*i,sizeof(int));
@@ -198,9 +198,9 @@ bool DataBase::queryByShift(QString pStartTime,QString pEndTime,QList<long long>
 bool DataBase::insertLastData(int AllCount,int failCount,cErrorInfo info)
 {
 	QByteArray frontData,ClampData,RearData;
-	frontData.append((char*)info.iFrontErrorByType,sizeof(int)*50);
-	ClampData.append((char*)info.iClampErrorByType,sizeof(int)*50);
-	RearData.append((char*)info.iRearErrorByType,sizeof(int)*50);
+	frontData.append((char*)info.iFrontErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
+	ClampData.append((char*)info.iClampErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
+	RearData.append((char*)info.iRearErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
 
 	QSqlDatabase m_db = QSqlDatabase::database(sqlConnectName);
 	if(!m_db.isOpen())
@@ -242,7 +242,7 @@ bool DataBase::queryLastData(int &AllCount,int &failCount,cErrorInfo &info)
 			ClampData = query.value(4).toByteArray();
 			RearData  = query.value(5).toByteArray();
 
-			for (int i=0;i<50;i++)
+			for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 			{
 				int tmp=0;
 				memcpy(&tmp,frontData.data() + sizeof(int)*i,sizeof(int));
@@ -263,9 +263,9 @@ bool DataBase::queryLastData(int &AllCount,int &failCount,cErrorInfo &info)
 bool DataBase::insertLastTimeData( cErrorInfo info )
 {
 	QByteArray frontData,ClampData,RearData;
-	frontData.append((char*)info.iFrontErrorByType,sizeof(int)*50);
-	ClampData.append((char*)info.iClampErrorByType,sizeof(int)*50);
-	RearData.append((char*)info.iRearErrorByType,sizeof(int)*50);
+	frontData.append((char*)info.iFrontErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
+	ClampData.append((char*)info.iClampErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
+	RearData.append((char*)info.iRearErrorByType,sizeof(int)*ERRORTYPE_MAX_COUNT);
 
 	QSqlDatabase m_db = QSqlDatabase::database(sqlConnectName);
 	if(!m_db.isOpen())
@@ -303,7 +303,7 @@ bool DataBase::queryLastTimeData( cErrorInfo &info )
 			ClampData = query.value(2).toByteArray();
 			RearData  = query.value(3).toByteArray();
 
-			for (int i=0;i<50;i++)
+			for (int i=0;i<ERRORTYPE_MAX_COUNT;i++)
 			{
 				int tmp=0;
 				memcpy(&tmp,frontData.data() + sizeof(int)*i,sizeof(int));

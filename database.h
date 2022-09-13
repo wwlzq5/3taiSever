@@ -7,7 +7,7 @@
 #include "qsqlrecord.h"
 #include <QVariant>
 #include "widget_count.h"
-
+#include "Stool.h"
 class DataBase
 {
 public:
