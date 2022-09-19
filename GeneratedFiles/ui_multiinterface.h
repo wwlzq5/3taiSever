@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'multiinterface.ui'
 **
-** Created: Thu Aug 11 14:23:12 2022
+** Created: Fri Sep 16 16:43:17 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

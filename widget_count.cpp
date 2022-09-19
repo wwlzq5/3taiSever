@@ -493,6 +493,10 @@ void widget_count::slots_UpdateTable1(cErrorInfo pCountdates)
 	QList<QStandardItem*> items;
 	for (int i=1;i<=pMainFrm->m_ErrorTypeInfo.iErrorTypeCount;i++)
 	{
+		if(pMainFrm->m_ErrorTypeInfo.iErrorType[i] == "free"||pMainFrm->m_ErrorTypeInfo.iErrorType[i] == "pingshenAI"||pMainFrm->m_ErrorTypeInfo.iErrorType[i] =="pingkouAI")
+		{
+			continue;
+		}
 		items.clear();
 		int ErrorByType=pCountdates.GetErrorByTypeCount(i);
 		if (ErrorByType != 0)
@@ -507,7 +511,6 @@ void widget_count::slots_UpdateTable1(cErrorInfo pCountdates)
 			items<<item4;
 			QStandardItem *item5 = new QStandardItem(QString::number(pCountdates.iRearErrorByType[i]));
 			items<<item5;
-
 			table1Model->insertRow(table1Model->rowCount(),items);
 		}
 	}
@@ -1245,6 +1248,10 @@ void ExportExcelThread::run()
 		QStringList dataList;
 		for (int k=1;k<=pMainFrm->m_ErrorTypeInfo.iErrorTypeCount;k++)
 		{
+			if(pMainFrm->m_ErrorTypeInfo.iErrorType[i] == "free"||pMainFrm->m_ErrorTypeInfo.iErrorType[i] == "pingshenAI"||pMainFrm->m_ErrorTypeInfo.iErrorType[i] =="pingkouAI")
+			{
+				continue;
+			}
 			int ErrorBytype=info.GetErrorByTypeCount(k);
 			if(ErrorBytype != 0)
 			{

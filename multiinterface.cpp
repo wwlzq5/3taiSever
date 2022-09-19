@@ -3,7 +3,7 @@
 
 MultiInterface *pMainFrm;
 #define CUSTOMALERT 3
-#define JIAMI_INITIA
+//#define JIAMI_INITIA
 #ifdef JIAMI_INITIA
 	#include "ProgramLicense.h"
 	CProgramLicense m_ProgramLicense;
@@ -606,6 +606,10 @@ void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 
 	for(int i=1;i<=m_ErrorTypeInfo.iErrorTypeCount;i++)
 	{
+		if(m_ErrorTypeInfo.iErrorType[i] == "free"||m_ErrorTypeInfo.iErrorType[i] == "pingshen"||m_ErrorTypeInfo.iErrorType[i] =="pingkou")
+		{
+			continue;
+		}
 		writeStream<<m_ErrorTypeInfo.iErrorType[i] + ":" + QString::number(wData.GetErrorByTypeCount(i))<<"\t";
 	}
 	writeStream<<"\n";
@@ -618,6 +622,10 @@ void MultiInterface::SaveCountInfo(SaveReportType pType,QString pTxt)
 
 	for(int i=1;i<= m_ErrorTypeInfo.iErrorTypeCount;i++)
 	{
+		if(m_ErrorTypeInfo.iErrorType[i] == "free"||m_ErrorTypeInfo.iErrorType[i] == "pingshenAI"||m_ErrorTypeInfo.iErrorType[i] =="pingkouAI")
+		{
+			continue;
+		}
 		int pErrorByType = wData.GetErrorByTypeCount(i);
 		QString tempString=m_ErrorTypeInfo.iErrorType[i];
 		int tt = tempString.length();
